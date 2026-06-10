@@ -1,0 +1,17 @@
+# Vercel Environment Variables Configuration List
+
+Configure the following variables in your Vercel Dashboard project settings under "Environment Variables":
+
+1. NEXT_PUBLIC_API_URL
+   - Value (Production): https://recruitai.io
+   - Value (Preview / Development): http://localhost:5000 or staging API endpoint
+   - Environments: Production, Preview, Development
+
+2. NEXT_PUBLIC_HUB_URL
+   - Value (Production): https://recruitai.io/hubs/recruitment
+   - Value (Preview / Development): http://localhost:5000/hubs/recruitment
+   - Environments: Production, Preview, Development
+
+3. ANALYZE
+   - Value: false
+   - Environments: Production, Preview
