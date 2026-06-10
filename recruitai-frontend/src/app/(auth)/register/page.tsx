@@ -40,8 +40,9 @@ export default function RegisterPage() {
 
       router.replace('/jobs/new');
     } catch (err: any) {
+      const detail = err.response?.data?.detail || err.response?.data?.title || err.message || 'An error occurred during registration.';
       toast('Registration failed', {
-        description: err.response?.data?.detail || 'An error occurred during registration.',
+        description: detail,
         type: 'error',
       });
     } finally {

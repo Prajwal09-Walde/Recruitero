@@ -47,8 +47,9 @@ export default function LoginPage() {
           type: 'error',
         });
       } else {
+        const fallbackDetail = err.response?.data?.title || err.message || 'An error occurred during authentication.';
         toast('Login failed', {
-          description: detail || 'An error occurred during authentication.',
+          description: detail || fallbackDetail,
           type: 'error',
         });
       }
