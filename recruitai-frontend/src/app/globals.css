@@ -37,6 +37,60 @@
     --ring: 263.4 70% 50.4%;
     
     --radius: 0.75rem;
+
+    /* Default gradients (Midnight Purple) */
+    --grad-1: 124, 58, 237; /* Violet */
+    --grad-2: 99, 102, 241;  /* Indigo */
+    --grad-3: 217, 70, 239;  /* Fuchsia */
+  }
+
+  /* Themes */
+  .theme-ocean {
+    --background: 222 47% 4%;
+    --card: 222 47% 6%;
+    --primary: 217.2 91.2% 59.8%;
+    --ring: 217.2 91.2% 59.8%;
+    --border: 222 47% 12%;
+    --input: 222 47% 12%;
+    --grad-1: 14, 165, 233; /* Sky */
+    --grad-2: 59, 130, 246;  /* Blue */
+    --grad-3: 99, 102, 241;  /* Indigo */
+  }
+
+  .theme-emerald {
+    --background: 160 50% 3%;
+    --card: 160 50% 5%;
+    --primary: 142.1 76.2% 45.3%;
+    --ring: 142.1 76.2% 45.3%;
+    --border: 160 50% 10%;
+    --input: 160 50% 10%;
+    --grad-1: 16, 185, 129; /* Emerald */
+    --grad-2: 34, 197, 94;   /* Green */
+    --grad-3: 14, 165, 233;  /* Sky */
+  }
+
+  .theme-steel {
+    --background: 240 10% 4%;
+    --card: 240 10% 6%;
+    --primary: 240 5.9% 70%;
+    --ring: 240 5.9% 70%;
+    --border: 240 5.9% 15%;
+    --input: 240 5.9% 15%;
+    --grad-1: 100, 116, 139; /* Slate */
+    --grad-2: 71, 85, 105;   /* Steel */
+    --grad-3: 148, 163, 184; /* Cool Grey */
+  }
+
+  .theme-amber {
+    --background: 20 20% 4%;
+    --card: 20 20% 6%;
+    --primary: 37.9 90.2% 50.2%;
+    --ring: 37.9 90.2% 50.2%;
+    --border: 20 20% 12%;
+    --input: 20 20% 12%;
+    --grad-1: 245, 158, 11; /* Amber */
+    --grad-2: 249, 115, 22;  /* Orange */
+    --grad-3: 239, 68, 68;   /* Red */
   }
 }
 
@@ -47,9 +101,9 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     background-image: 
-      radial-gradient(at 0% 0%, rgba(124, 58, 237, 0.08) 0, transparent 50%),
-      radial-gradient(at 50% 0%, rgba(99, 102, 241, 0.04) 0, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(217, 70, 239, 0.06) 0, transparent 50%);
+      radial-gradient(at 0% 0%, rgba(var(--grad-1), 0.08) 0, transparent 50%),
+      radial-gradient(at 50% 0%, rgba(var(--grad-2), 0.04) 0, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(var(--grad-3), 0.06) 0, transparent 50%);
     background-attachment: fixed;
     min-height: 100vh;
   }

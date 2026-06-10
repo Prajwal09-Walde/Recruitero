@@ -7,13 +7,29 @@ import { useUiStore } from '@/stores/uiStore';
 import { LogOut, PlusCircle, Menu, UserCircle, Briefcase } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import apiClient from '@/lib/apiClient';
+import { useThemeStore, ThemeType } from '@/stores/themeStore';
 
 export function MainLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAuthPage = pathname === '/login' || pathname === '/register';
   const { user, logout } = useAuthStore();
   const { sidebarOpen, toggleSidebar } = useUiStore();
+  const { theme, setTheme } = useThemeStore();
   const router = useRouter();
+
+  const themes: { id: ThemeType; label: string; colorClass: string }[] = [
+    { id: 'midnight', label: 'Midnight Purple', colorClass: 'bg-violet-600' },
+    { id: 'ocean', label: 'Ocean Blue', colorClass: 'bg-blue-500' },
+    { id: 'emerald', label: 'Forest Emerald', colorClass: 'bg-emerald-500' },
+    { id: 'steel', label: 'Classic Steel', colorClass: 'bg-slate-400' },
+    { id: 'amber', label: 'Sunset Amber', colorClass: 'bg-amber-500' },
+  ];
+
+  const toggleNextTheme = () => {
+    const currentIndex = themes.findIndex(t => t.id === theme);
+    const nextIndex = (currentIndex + 1) % themes.length;
+    setTheme(themes[nextIndex].id);
+  };
 
   if (isAuthPage) {
     return <div className="min-h-screen w-full flex items-center justify-center">{children}</div>;
@@ -88,6 +104,46 @@ export function MainLayoutWrapper({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className="p-3 border-t border-white/5 flex flex-col gap-2">
+          {/* Theme Selector */}
+          <div className="mb-2">
+            {sidebarOpen ? (
+              <div className="flex flex-col gap-1.5">
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold px-1">Theme</span>
+                <div className="flex items-center justify-between px-1 bg-white/5 p-1 rounded-lg border border-white/5">
+                  {themes.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => setTheme(t.id)}
+                      title={t.label}
+                      className={cn(
+                        "w-5 h-5 rounded-full transition-all duration-200 relative shrink-0",
+                        t.colorClass,
+                        theme === t.id ? "ring-2 ring-white scale-110 shadow-lg" : "hover:scale-105 opacity-80 hover:opacity-100"
+                      )}
+                    >
+                      {theme === t.id && (
+                        <span className="absolute inset-0 flex items-center justify-center text-[8px] font-bold text-white">✓</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={toggleNextTheme}
+                title={`Theme: ${themes.find(t => t.id === theme)?.label}. Click to cycle.`}
+                className={cn(
+                  "w-full flex items-center justify-center p-2 rounded-xl transition-all duration-200 hover:bg-white/5"
+                )}
+              >
+                <div className={cn(
+                  "w-4 h-4 rounded-full border border-white/20 shadow-inner",
+                  themes.find(t => t.id === theme)?.colorClass
+                )} />
+              </button>
+            )}
+          </div>
+
           {user && (
             <div className="flex items-center gap-3 px-3 py-2">
               <UserCircle className="w-8 h-8 text-violet-400 shrink-0" />
