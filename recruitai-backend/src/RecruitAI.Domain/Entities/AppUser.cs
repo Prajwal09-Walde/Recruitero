@@ -14,7 +14,6 @@ public class AppUser : BaseEntity
     public string PasswordHash { get; private set; } = string.Empty;
     /// <summary>One of: HRAdmin | Recruiter | Viewer</summary>
     public string Role     { get; private set; } = string.Empty;
-    public DateTime CreatedAt  { get; private set; } = DateTime.UtcNow;
     public DateTime? LastLoginAt { get; private set; }
     /// <summary>Opaque refresh token stored in MongoDB for server-side validation.</summary>
     public string? RefreshToken { get; private set; }
