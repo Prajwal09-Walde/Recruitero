@@ -84,6 +84,7 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<ICandidateRankingService, CandidateRankingService>();
         services.AddScoped<IInterviewKitGenerationService, InterviewKitGenerationService>();
         services.AddScoped<IResumeProcessingService, ResumeProcessingService>();
+        services.AddScoped<IEmailService, Services.EmailService>();
 
 
 

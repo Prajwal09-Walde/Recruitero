@@ -4,6 +4,8 @@ using Qdrant.Client.Grpc;
 using RecruitAI.Application.Interfaces;
 using RecruitAI.Domain.Entities;
 using RecruitAI.Shared.Exceptions;
+using System;
+using System.Linq;
 
 namespace RecruitAI.Infrastructure.AI;
 
@@ -95,41 +97,92 @@ public sealed class FitScoringService(
             // 7. Normalize to 0–100 (cosine similarity is 0–1 for normalized embeddings)
             double rawScore = weightedScore * 100.0;
 
-            // 8. Apply boost/penalty from SkillGraph
+            // 8. Apply boost/penalty from SkillGraph and calculate Lexical match score
             var skillGraph = jobPosting.SkillGraph;
             double boost = 0;
             double penalty = 0;
             var skillMatches = new List<SkillMatch>();
+            double blendedScore = rawScore;
 
             if (skillGraph is not null)
             {
-                // Check experience years
-                var candidate = application.Candidate;
-                // (In production, candidate.TotalExperienceYears would be populated by metadata extraction)
+                var fullResumeText = string.Join(" ", scoredChunks.Select(c => c.Text));
 
-                // Skill matching: check if any resume chunk contains the skill name
+                // Required skills (weight 0.6 of lexical score)
+                double totalRequiredWeight = 0;
+                double matchedRequiredWeight = 0;
                 foreach (var skill in skillGraph.RequiredSkills)
                 {
-                    bool matched = scoredChunks.Any(c =>
-                        c.Text.Contains(skill.Skill, StringComparison.OrdinalIgnoreCase));
+                    bool matched = MatchKeyword(fullResumeText, skill.Skill);
+                    double weight = skill.Weight > 0 ? skill.Weight : 1.0;
+                    totalRequiredWeight += weight;
+                    if (matched)
+                    {
+                        matchedRequiredWeight += weight;
+                    }
 
                     skillMatches.Add(new SkillMatch(
                         Skill: skill.Skill,
                         Matched: matched,
                         MatchScore: matched ? scoredChunks
-                            .Where(c => c.Text.Contains(skill.Skill, StringComparison.OrdinalIgnoreCase))
-                            .Max(c => c.Similarity) : 0.0));
+                            .Where(c => MatchKeyword(c.Text, skill.Skill))
+                            .Select(c => c.Similarity)
+                            .DefaultIfEmpty(0.5)
+                            .Max() : 0.0));
                 }
 
+                // Nice to have skills (weight 0.3 of lexical score)
+                double totalNiceToHaveWeight = 0;
+                double matchedNiceToHaveWeight = 0;
+                foreach (var skill in skillGraph.NiceToHaveSkills)
+                {
+                    bool matched = MatchKeyword(fullResumeText, skill.Skill);
+                    double weight = skill.Weight > 0 ? skill.Weight : 1.0;
+                    totalNiceToHaveWeight += weight;
+                    if (matched)
+                    {
+                        matchedNiceToHaveWeight += weight;
+                    }
+                }
+
+                // Domain keywords (weight 0.1 of lexical score)
+                double totalDomainWeight = 0;
+                double matchedDomainWeight = 0;
+                if (skillGraph.DomainKeywords != null)
+                {
+                    foreach (var keyword in skillGraph.DomainKeywords)
+                    {
+                        bool matched = MatchKeyword(fullResumeText, keyword);
+                        double weight = 0.5;
+                        totalDomainWeight += weight;
+                        if (matched)
+                        {
+                            matchedDomainWeight += weight;
+                        }
+                    }
+                }
+
+                // Compute lexical sub-scores (default to 100 if no keywords are defined for a section)
+                double requiredScore = totalRequiredWeight > 0 ? (matchedRequiredWeight / totalRequiredWeight) * 100.0 : 100.0;
+                double niceToHaveScore = totalNiceToHaveWeight > 0 ? (matchedNiceToHaveWeight / totalNiceToHaveWeight) * 100.0 : 100.0;
+                double domainScore = totalDomainWeight > 0 ? (matchedDomainWeight / totalDomainWeight) * 100.0 : 100.0;
+
+                // Blend lexical categories
+                double lexicalScore = (requiredScore * 0.6) + (niceToHaveScore * 0.3) + (domainScore * 0.1);
+
+                // Blend vector (70%) and lexical (30%) scores
+                blendedScore = (rawScore * 0.7) + (lexicalScore * 0.3);
+
+                // Apply penalty if no required skills match
                 bool anyRequiredSkillMatched = skillMatches.Any(s => s.Matched);
-                if (!anyRequiredSkillMatched)
+                if (skillGraph.RequiredSkills.Count > 0 && !anyRequiredSkillMatched)
                 {
                     penalty = 10.0;
                     logger.LogInformation("[FitScoring] Applying –10 penalty: no required skills matched");
                 }
             }
 
-            double finalScore = Math.Clamp(rawScore + boost - penalty, 0.0, 100.0);
+            double finalScore = Math.Clamp(blendedScore + boost - penalty, 0.0, 100.0);
             var fitScore = (decimal)Math.Round(finalScore, 2);
 
             // 9. Build ranking object
@@ -282,6 +335,28 @@ public sealed class FitScoringService(
 
     private static AIRanking CreateEmptyRanking() =>
         new(0m, [], [], DateTime.UtcNow);
+
+    private static bool MatchKeyword(string text, string keyword)
+    {
+        if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(keyword))
+            return false;
+
+        var hasSpecialChars = keyword.Any(c => !char.IsLetterOrDigit(c));
+        if (hasSpecialChars)
+        {
+            return text.Contains(keyword, StringComparison.OrdinalIgnoreCase);
+        }
+        
+        var pattern = $@"\b{System.Text.RegularExpressions.Regex.Escape(keyword)}\b";
+        try
+        {
+            return System.Text.RegularExpressions.Regex.IsMatch(text, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        }
+        catch
+        {
+            return text.Contains(keyword, StringComparison.OrdinalIgnoreCase);
+        }
+    }
 
     private record ScoredChunk(string Section, string Text, double Similarity, double Weight);
     private record ResumeChunkVector(string Section, string Text, float[] Vector);

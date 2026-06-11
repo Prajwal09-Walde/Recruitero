@@ -4,14 +4,18 @@ import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { useUiStore } from '@/stores/uiStore';
-import { LogOut, PlusCircle, Menu, UserCircle, Briefcase, Sun, Moon } from 'lucide-react';
+import { LogOut, PlusCircle, Menu, UserCircle, Briefcase, Sun, Moon, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import apiClient from '@/lib/apiClient';
 import { useThemeStore, ThemeType } from '@/stores/themeStore';
 
 export function MainLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isAuthPage = pathname === '/login' || pathname === '/register';
+  const isAuthPage =
+    pathname === '/login' ||
+    pathname === '/register' ||
+    pathname === '/forgot-password' ||
+    pathname === '/reset-password';
   const { user, logout } = useAuthStore();
   const { sidebarOpen, toggleSidebar } = useUiStore();
   const { theme, setTheme } = useThemeStore();
@@ -38,8 +42,10 @@ export function MainLayoutWrapper({ children }: { children: React.ReactNode }) {
   if (user?.role === 'HRAdmin') {
     navItems.push({ label: 'Jobs Dashboard', icon: Briefcase, href: '/jobs' });
     navItems.push({ label: 'Create Job', icon: PlusCircle, href: '/jobs/new' });
+    navItems.push({ label: 'Analytics', icon: BarChart3, href: '/analytics' });
   } else if (user?.role === 'Recruiter') {
     navItems.push({ label: 'Jobs Dashboard', icon: Briefcase, href: '/jobs' });
+    navItems.push({ label: 'Analytics', icon: BarChart3, href: '/analytics' });
   } else if (user?.role === 'Viewer') {
     navItems.push({ label: 'Job Openings', icon: Briefcase, href: '/jobs' });
   }

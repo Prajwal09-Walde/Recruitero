@@ -4,6 +4,9 @@ using Microsoft.Extensions.Logging;
 using RecruitAI.Application.Interfaces;
 using RecruitAI.Domain.Entities;
 using RecruitAI.Shared.Exceptions;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using System.IO.Compression;
 
 namespace RecruitAI.Application.Features.Resumes.Commands;
 
@@ -34,9 +37,56 @@ public sealed class BulkUploadResumesHandler(
             throw new NotFoundException(nameof(Domain.Entities.Job), request.JobId);
 
         var applicationIds = new List<Guid>();
+        var filesToProcess = new List<IFormFile>();
 
-        // 2. Process each file concurrently (sequential for simplicity; parallelize if needed)
+        // 2a. Pre-process and extract zip files
         foreach (var file in request.Files)
+        {
+            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (ext == ".zip")
+            {
+                try
+                {
+                    using var stream = file.OpenReadStream();
+                    using var archive = new ZipArchive(stream, ZipArchiveMode.Read);
+                    foreach (var entry in archive.Entries)
+                    {
+                        if (string.IsNullOrEmpty(entry.Name) || entry.Length == 0)
+                            continue;
+
+                        var entryExt = Path.GetExtension(entry.Name).ToLowerInvariant();
+                        if (entryExt == ".pdf" || entryExt == ".docx" || entryExt == ".txt")
+                        {
+                            using var entryStream = entry.Open();
+                            using var ms = new MemoryStream();
+                            await entryStream.CopyToAsync(ms, cancellationToken);
+                            var bytes = ms.ToArray();
+
+                            var contentType = entryExt switch
+                            {
+                                ".pdf" => "application/pdf",
+                                ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                ".txt" => "text/plain",
+                                _ => "application/octet-stream"
+                            };
+
+                            filesToProcess.Add(new InMemoryFormFile(bytes, entry.Name, contentType));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Failed to extract ZIP file {FileName}", file.FileName);
+                }
+            }
+            else
+            {
+                filesToProcess.Add(file);
+            }
+        }
+
+        // 2b. Process each file (PDF, DOCX, TXT)
+        foreach (var file in filesToProcess)
         {
             try
             {
@@ -108,4 +158,27 @@ public sealed class BulkUploadResumesHandler(
 public interface IProcessResumeJob
 {
     Task ExecuteAsync(Guid applicationId, CancellationToken ct);
+}
+
+public sealed class InMemoryFormFile : IFormFile
+{
+    private readonly byte[] _content;
+    public InMemoryFormFile(byte[] content, string fileName, string contentType)
+    {
+        _content = content;
+        FileName = fileName;
+        ContentType = contentType;
+        Length = content.Length;
+    }
+
+    public string ContentType { get; }
+    public string ContentDisposition => $"form-data; name=\"files\"; filename=\"{FileName}\"";
+    public IHeaderDictionary Headers => new HeaderDictionary();
+    public long Length { get; }
+    public string Name => "files";
+    public string FileName { get; }
+
+    public Stream OpenReadStream() => new MemoryStream(_content);
+    public void CopyTo(Stream target) => new MemoryStream(_content).CopyTo(target);
+    public Task CopyToAsync(Stream target, CancellationToken cancellationToken = default) => new MemoryStream(_content).CopyToAsync(target, cancellationToken);
 }

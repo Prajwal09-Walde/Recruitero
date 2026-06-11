@@ -29,7 +29,11 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isHydrated) return;
 
-    const isAuthPage = pathname === '/login' || pathname === '/register';
+    const isAuthPage =
+      pathname === '/login' ||
+      pathname === '/register' ||
+      pathname === '/forgot-password' ||
+      pathname === '/reset-password';
 
     if (!isAuthenticated && !isAuthPage) {
       router.replace('/login');
@@ -43,7 +47,11 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   }, [isHydrated, isAuthenticated, user, pathname, router]);
 
   // Public authentication pages should load instantly on client/server without any spinner
-  const isAuthPage = pathname === '/login' || pathname === '/register';
+  const isAuthPage =
+    pathname === '/login' ||
+    pathname === '/register' ||
+    pathname === '/forgot-password' ||
+    pathname === '/reset-password';
 
   if (!isHydrated) {
     // Always pass through auth pages immediately — no spinner

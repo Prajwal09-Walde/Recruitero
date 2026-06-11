@@ -10,6 +10,7 @@ using RecruitAI.Shared.Constants;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
+using MongoDB.Driver;
 
 namespace RecruitAI.API.Controllers;
 
@@ -25,14 +26,15 @@ public sealed class JobsController(
     IJobRepository jobRepository,
     IJobPostingRepository jobPostingRepository,
     IJobSkillExtractor skillExtractor,
-    IHttpClientFactory httpClientFactory) : ControllerBase
+    IHttpClientFactory httpClientFactory,
+    MongoDbContext mongoContext) : ControllerBase
 {
     /// <summary>
     /// Bulk upload PDF resumes for a job opening.
     /// Accepts up to 20 PDF files (max 5MB each) via multipart/form-data.
     /// </summary>
     [HttpPost("{jobId:guid}/applications/bulk-upload")]
-    [Authorize(Roles = $"{Roles.HrAdmin},{Roles.Viewer}")]
+    [Authorize(Roles = $"{Roles.HrAdmin},{Roles.Recruiter},{Roles.Viewer}")]
     [RequestSizeLimit(110 * 1024 * 1024)] // 20 files × 5.5MB buffer
     [DisableRequestSizeLimit]
     [ProducesResponseType(typeof(BulkUploadResumesResult), StatusCodes.Status202Accepted)]
@@ -53,6 +55,98 @@ public sealed class JobsController(
         var command = new BulkUploadResumesCommand(jobId, files.ToList(), candidateEmail);
         var result = await mediator.Send(command, cancellationToken);
         return AcceptedAtAction(nameof(BulkUploadResumes), result);
+    }
+
+    /// <summary>
+    /// Returns recruitment funnel analytics aggregated across all jobs.
+    /// Restricted to HRAdmin and Recruiter.
+    /// </summary>
+    [HttpGet("analytics")]
+    [Authorize(Roles = $"{Roles.HrAdmin},{Roles.Recruiter}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAnalytics(CancellationToken cancellationToken)
+    {
+        var jobs = await jobRepository.GetAllAsync(cancellationToken);
+        
+        // Fetch all applications
+        var applications = await mongoContext.Applications.Find(Builders<RecruitAI.Domain.Entities.Application>.Filter.Empty).ToListAsync(cancellationToken);
+        
+        int totalJobs = jobs.Count;
+        int totalApplications = applications.Count;
+
+        // Funnel counts
+        var funnel = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+        {
+            [ApplicationStatus.Queued] = 0,
+            [ApplicationStatus.Processing] = 0,
+            [ApplicationStatus.Scored] = 0,
+            [ApplicationStatus.SentToRecruiter] = 0,
+            [ApplicationStatus.Shortlisted] = 0,
+            [ApplicationStatus.Rejected] = 0,
+            [ApplicationStatus.Failed] = 0
+        };
+
+        foreach (var app in applications)
+        {
+            if (funnel.ContainsKey(app.Status))
+            {
+                funnel[app.Status]++;
+            }
+        }
+
+        // Department breakdown
+        var departmentJobs = jobs.GroupBy(j => j.Department ?? "Other")
+            .ToDictionary(g => g.Key, g => g.Count());
+
+        var jobToDepartment = jobs.ToDictionary(j => j.Id, j => j.Department ?? "Other");
+        
+        var departmentApplications = applications.GroupBy(app => 
+            jobToDepartment.TryGetValue(app.JobId, out var dept) ? dept : "Other")
+            .ToDictionary(g => g.Key, g => g.Count());
+
+        var departments = departmentJobs.Keys.Union(departmentApplications.Keys)
+            .Select(dept => new
+            {
+                department = dept,
+                jobsCount = departmentJobs.TryGetValue(dept, out var jc) ? jc : 0,
+                applicationsCount = departmentApplications.TryGetValue(dept, out var ac) ? ac : 0
+            })
+            .ToList();
+
+        // Jobs breakdown
+        var jobsBreakdown = new List<object>();
+        foreach (var job in jobs)
+        {
+            var jobApps = applications.Where(a => a.JobId == job.Id).ToList();
+            double avgScore = 0;
+            var scoredApps = jobApps.Where(a => a.FitScore.HasValue).ToList();
+            if (scoredApps.Count > 0)
+            {
+                avgScore = (double)scoredApps.Average(a => a.FitScore!.Value);
+            }
+
+            var statusCounts = jobApps.GroupBy(a => a.Status)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            jobsBreakdown.Add(new
+            {
+                jobId = job.Id,
+                title = job.Title,
+                department = job.Department,
+                applicationCount = jobApps.Count,
+                averageScore = Math.Round(avgScore, 2),
+                statusCounts = statusCounts
+            });
+        }
+
+        return Ok(new
+        {
+            totalJobs,
+            totalApplications,
+            funnel,
+            departments,
+            jobsBreakdown
+        });
     }
 
     /// <summary>

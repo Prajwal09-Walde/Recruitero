@@ -25,12 +25,14 @@ export default function ResumeUploadPage() {
 
   // Dropzone setup
   const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
-    // PDF only, max 20 files, 5MB each
+    // PDF, DOCX, TXT, ZIP, max 20 files, 5MB each
     const errorsList: { name: string; error: string }[] = [];
     
     const validFiles = acceptedFiles.filter((file) => {
-      if (file.type !== 'application/pdf') {
-        errorsList.push({ name: file.name, error: 'Only PDF files are accepted' });
+      const ext = file.name.split('.').pop()?.toLowerCase();
+      const isValid = ['pdf', 'docx', 'txt', 'zip'].includes(ext || '');
+      if (!isValid) {
+        errorsList.push({ name: file.name, error: 'Only PDF, DOCX, TXT, and ZIP files are accepted' });
         return false;
       }
       if (file.size > 5 * 1024 * 1024) {
@@ -48,7 +50,7 @@ export default function ResumeUploadPage() {
         error: isSize
           ? 'File size exceeds 5MB limit'
           : isType
-          ? 'Only PDF files are accepted'
+          ? 'Only PDF, DOCX, TXT, and ZIP files are accepted'
           : 'Invalid file',
       });
     });
@@ -70,7 +72,13 @@ export default function ResumeUploadPage() {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 'application/pdf': ['.pdf'] },
+    accept: {
+      'application/pdf': ['.pdf'],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+      'text/plain': ['.txt'],
+      'application/zip': ['.zip'],
+      'application/x-zip-compressed': ['.zip'],
+    },
     maxSize: 5 * 1024 * 1024,
     multiple: true,
   });
@@ -112,17 +120,29 @@ export default function ResumeUploadPage() {
 
   // SignalR real-time processing listener
   const { isReconnecting } = useRecruitmentHub(isUploaded ? jobId : null, {
-    onProcessingStarted: (appId) => {
-      setCandidates((prev) =>
-        prev.map((c) => (c.applicationId === appId ? { ...c, status: 'Processing' } : c))
-      );
+    onResumeUploaded: (appId, name) => {
+      setCandidates((prev) => {
+        if (prev.some((c) => c.applicationId === appId)) return prev;
+        return [...prev, { applicationId: appId, name, status: 'Queued' }];
+      });
+    },
+    onProcessingStarted: (appId, name) => {
+      setCandidates((prev) => {
+        if (prev.some((c) => c.applicationId === appId)) {
+          return prev.map((c) => (c.applicationId === appId ? { ...c, status: 'Processing', name } : c));
+        }
+        return [...prev, { applicationId: appId, name, status: 'Processing' }];
+      });
     },
     onFitScoreReady: (appId, name, score) => {
-      setCandidates((prev) =>
-        prev.map((c) =>
-          c.applicationId === appId ? { ...c, status: 'Scored', fitScore: score } : c
-        )
-      );
+      setCandidates((prev) => {
+        if (prev.some((c) => c.applicationId === appId)) {
+          return prev.map((c) =>
+            c.applicationId === appId ? { ...c, status: 'Scored', fitScore: score, name } : c
+          );
+        }
+        return [...prev, { applicationId: appId, name, status: 'Scored', fitScore: score }];
+      });
     },
     onInterviewKitReady: (appId) => {
       setCandidates((prev) =>
@@ -130,11 +150,14 @@ export default function ResumeUploadPage() {
       );
     },
     onProcessingFailed: (appId, name, err) => {
-      setCandidates((prev) =>
-        prev.map((c) =>
-          c.applicationId === appId ? { ...c, status: 'Failed', errorMessage: err } : c
-        )
-      );
+      setCandidates((prev) => {
+        if (prev.some((c) => c.applicationId === appId)) {
+          return prev.map((c) =>
+            c.applicationId === appId ? { ...c, status: 'Failed', errorMessage: err, name } : c
+          );
+        }
+        return [...prev, { applicationId: appId, name, status: 'Failed', errorMessage: err }];
+      });
     },
   });
 

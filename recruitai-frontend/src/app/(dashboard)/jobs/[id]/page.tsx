@@ -33,12 +33,15 @@ export default function JobDetailPage() {
   const { upload, progress, isUploading, isUploaded } = useUpload();
 
   const onDrop = React.useCallback((acceptedFiles: File[]) => {
-    const pdfs = acceptedFiles.filter(f => f.type === 'application/pdf');
-    if (pdfs.length > 0) {
-      setFiles(pdfs.slice(0, 1));
+    const allowed = acceptedFiles.filter(f => {
+      const ext = f.name.split('.').pop()?.toLowerCase();
+      return ext === 'pdf' || ext === 'docx' || ext === 'txt';
+    });
+    if (allowed.length > 0) {
+      setFiles(allowed.slice(0, 1));
     } else {
       toast('Invalid file type', {
-        description: 'Only PDF files are accepted.',
+        description: 'Only PDF, DOCX, and TXT files are accepted.',
         type: 'error',
       });
     }
@@ -46,7 +49,11 @@ export default function JobDetailPage() {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 'application/pdf': ['.pdf'] },
+    accept: {
+      'application/pdf': ['.pdf'],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+      'text/plain': ['.txt'],
+    },
     maxFiles: 1,
     disabled: isUploading || isUploaded,
   });

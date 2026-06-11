@@ -6,13 +6,14 @@ using RecruitAI.API.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using RecruitAI.Application.Interfaces;
 
 namespace RecruitAI.API.Controllers;
 
 [ApiController]
 [Route("api/auth")]
 [Produces("application/json")]
-public sealed class AuthController(IConfiguration configuration, IUserService userService, ILogger<AuthController> logger) : ControllerBase
+public sealed class AuthController(IConfiguration configuration, IUserService userService, IEmailService emailService, ILogger<AuthController> logger) : ControllerBase
 {
     // ── Token lifetimes ───────────────────────────────────────────────────────────
     private int AccessTokenMinutes =>
@@ -134,18 +135,11 @@ public sealed class AuthController(IConfiguration configuration, IUserService us
         var token = await userService.GeneratePasswordResetTokenAsync(request.Email, ct);
         if (token is not null)
         {
-            // Simulate sending an email by logging it in a highly visible banner in the console
             var resetLink = $"http://localhost:3000/reset-password?email={Uri.EscapeDataString(request.Email)}&token={Uri.EscapeDataString(token)}";
+            var subject = "Reset Your RecruitAI Password";
+            var body = $"Please use the link below to verify your email and reset your password:\n\n{resetLink}";
             
-            logger.LogWarning(
-                "\n============================================================\n" +
-                "[SIMULATED EMAIL SERVICE]\n" +
-                $"To: {request.Email}\n" +
-                "Subject: Reset Your RecruitAI Password\n\n" +
-                "Please use the link below to verify your email and reset your password:\n" +
-                $"{resetLink}\n" +
-                "============================================================"
-            );
+            await emailService.SendEmailAsync(request.Email, subject, body, ct);
         }
 
         return Ok(new { Message = "If your email is registered in our system, a password reset link has been sent to it." });

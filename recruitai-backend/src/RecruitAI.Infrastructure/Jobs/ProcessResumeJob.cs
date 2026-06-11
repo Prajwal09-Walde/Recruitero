@@ -4,6 +4,10 @@ using RecruitAI.Application.Features.Resumes.Commands;
 using RecruitAI.Application.Interfaces;
 using RecruitAI.Shared.Constants;
 using UglyToad.PdfPig;
+using System;
+using System.IO;
+using System.Linq;
+using System.Xml.Linq;
 
 namespace RecruitAI.Infrastructure.Jobs;
 
@@ -41,13 +45,28 @@ public sealed class ProcessResumeJob(
             await applicationRepository.SaveChangesAsync(ct);
             await hubContext.NotifyProcessingStartedAsync(application.JobId, applicationId, candidateName);
 
-            // 2. Download PDF from S3
-            logger.LogInformation("[ProcessResumeJob] Downloading PDF from S3 key {Key}", application.ResumeS3Key);
-            var pdfBytes = await storageService.DownloadAsync(application.ResumeS3Key, ct);
+            // 2. Download from S3
+            logger.LogInformation("[ProcessResumeJob] Downloading file from S3 key {Key}", application.ResumeS3Key);
+            var fileBytes = await storageService.DownloadAsync(application.ResumeS3Key, ct);
 
-            // 3. Extract text using PdfPig
-            var extractedText = ExtractText(pdfBytes);
-            logger.LogInformation("[ProcessResumeJob] Extracted {Chars} chars from PDF", extractedText.Length);
+            // 3. Extract text depending on file format extension
+            var ext = Path.GetExtension(application.ResumeS3Key).ToLowerInvariant();
+            string extractedText;
+            if (ext == ".docx")
+            {
+                extractedText = ExtractTextFromDocx(fileBytes);
+                logger.LogInformation("[ProcessResumeJob] Extracted {Chars} chars from DOCX", extractedText.Length);
+            }
+            else if (ext == ".txt")
+            {
+                extractedText = ExtractTextFromTxt(fileBytes);
+                logger.LogInformation("[ProcessResumeJob] Extracted {Chars} chars from TXT", extractedText.Length);
+            }
+            else
+            {
+                extractedText = ExtractText(fileBytes);
+                logger.LogInformation("[ProcessResumeJob] Extracted {Chars} chars from PDF", extractedText.Length);
+            }
 
             // 4. Run AI pipeline
             var result = await processingService.ProcessAsync(applicationId, extractedText, ct);
@@ -87,5 +106,41 @@ public sealed class ProcessResumeJob(
         foreach (var page in document.GetPages())
             sb.AppendLine(page.Text);
         return sb.ToString();
+    }
+
+    private static string ExtractTextFromDocx(byte[] docxBytes)
+    {
+        try
+        {
+            using var stream = new MemoryStream(docxBytes);
+            using var archive = new System.IO.Compression.ZipArchive(stream, System.IO.Compression.ZipArchiveMode.Read);
+            var entry = archive.GetEntry("word/document.xml");
+            if (entry is null) return string.Empty;
+
+            using var entryStream = entry.Open();
+            var doc = XDocument.Load(entryStream);
+            
+            var paragraphs = doc.Descendants().Where(x => x.Name.LocalName == "p");
+            var sb = new System.Text.StringBuilder();
+            foreach (var p in paragraphs)
+            {
+                var tElements = p.Descendants().Where(x => x.Name.LocalName == "t");
+                foreach (var t in tElements)
+                {
+                    sb.Append(t.Value);
+                }
+                sb.AppendLine();
+            }
+            return sb.ToString();
+        }
+        catch (Exception ex)
+        {
+            return $"[Error parsing DOCX: {ex.Message}]";
+        }
+    }
+
+    private static string ExtractTextFromTxt(byte[] txtBytes)
+    {
+        return System.Text.Encoding.UTF8.GetString(txtBytes);
     }
 }

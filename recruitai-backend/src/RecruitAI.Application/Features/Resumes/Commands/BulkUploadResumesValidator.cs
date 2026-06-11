@@ -33,9 +33,13 @@ public class BulkUploadResumesValidator : AbstractValidator<BulkUploadResumesCom
                     .LessThanOrEqualTo(MaxFileSizeBytes)
                     .WithMessage(f => $"File '{f.FileName}' exceeds the 5MB size limit.");
 
-                file.RuleFor(f => f.ContentType)
-                    .Must(ct => ct == "application/pdf")
-                    .WithMessage(f => $"File '{f.FileName}' must be a PDF (got: {f.ContentType}).");
+                file.RuleFor(f => f.FileName)
+                    .Must(name =>
+                    {
+                        var ext = System.IO.Path.GetExtension(name).ToLowerInvariant();
+                        return ext == ".pdf" || ext == ".docx" || ext == ".txt" || ext == ".zip";
+                    })
+                    .WithMessage(f => $"File '{f.FileName}' must be a PDF, DOCX, TXT, or ZIP archive.");
             });
     }
 }
