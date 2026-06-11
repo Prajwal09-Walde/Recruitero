@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from '@/components/ui/Toaster';
 import { Mail, ArrowRight, ArrowLeft, Send } from 'lucide-react';
 import axios from 'axios';
+import { getApiUrl } from '@/lib/config';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -22,7 +23,7 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     try {
       await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/forgot-password`,
+        `${getApiUrl()}/api/auth/forgot-password`,
         { email }
       );
       setSubmitted(true);

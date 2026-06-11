@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { useAuthStore } from '@/stores/authStore';
+import { getHubUrl } from '@/lib/config';
 
 interface HubCallbacks {
   onResumeUploaded?: (applicationId: string, candidateName: string, timestamp: string) => void;
@@ -25,7 +26,7 @@ export function useRecruitmentHub(jobId: string | null, callbacks?: HubCallbacks
   useEffect(() => {
     if (!jobId || !token) return;
 
-    const hubUrl = process.env.NEXT_PUBLIC_HUB_URL || 'http://localhost:5000/hubs/recruitment';
+    const hubUrl = getHubUrl();
 
     // Configure connection with token resolver (enforces JWT bearer auth via query string)
     const connection = new signalR.HubConnectionBuilder()

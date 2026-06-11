@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
+import { getApiUrl } from './config';
 
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
+  baseURL: getApiUrl(),
   timeout: 15000, // 15s — fail fast rather than hanging the UI
   headers: {
     'Content-Type': 'application/json',
@@ -64,7 +65,7 @@ apiClient.interceptors.response.use(
         }
 
         const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/refresh`,
+          `${getApiUrl()}/api/auth/refresh`,
           {
             email: user.email,
             refreshToken: refreshToken,
@@ -84,7 +85,7 @@ apiClient.interceptors.response.use(
           const { token } = useAuthStore.getState();
           if (token) {
             await axios.post(
-              `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/logout`,
+              `${getApiUrl()}/api/auth/logout`,
               {},
               { headers: { Authorization: `Bearer ${token}` } }
             );

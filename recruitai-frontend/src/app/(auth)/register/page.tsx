@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { toast } from '@/components/ui/Toaster';
 import { Mail, Lock, User, Briefcase, ArrowRight } from 'lucide-react';
 import axios from 'axios';
+import { getApiUrl } from '@/lib/config';
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState('');
@@ -26,7 +27,7 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/register`,
+        `${getApiUrl()}/api/auth/register`,
         { email, password, fullName, role }
       );
 

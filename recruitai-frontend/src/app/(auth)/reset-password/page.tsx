@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from '@/components/ui/Toaster';
 import { Lock, ArrowRight, ArrowLeft, CheckCircle2, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
+import { getApiUrl } from '@/lib/config';
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -43,7 +44,7 @@ function ResetPasswordForm() {
     setLoading(true);
     try {
       await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/reset-password`,
+        `${getApiUrl()}/api/auth/reset-password`,
         { email, token, newPassword: password }
       );
       setSuccess(true);

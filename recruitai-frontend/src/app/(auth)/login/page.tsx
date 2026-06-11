@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { toast } from '@/components/ui/Toaster';
 import { Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
 import axios from 'axios';
+import { getApiUrl } from '@/lib/config';
 import { Role } from '@/types';
 
 export default function LoginPage() {
@@ -25,7 +26,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/login`,
+        `${getApiUrl()}/api/auth/login`,
         { email, password }
       );
 

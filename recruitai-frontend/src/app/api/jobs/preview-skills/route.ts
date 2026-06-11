@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
+import { getApiUrl } from '@/lib/config';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -9,7 +10,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Text query parameter is required' }, { status: 400 });
   }
 
-  const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const backendUrl = getApiUrl();
 
   try {
     const response = await axios.get(`${backendUrl}/api/jobs/preview-skills`, {
