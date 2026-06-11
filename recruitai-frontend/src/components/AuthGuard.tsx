@@ -11,8 +11,23 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   
   // Track client-side hydration explicitly for Zustand persist
   const [isHydrated, setIsHydrated] = useState(false);
+  const [hasPersistedToken, setHasPersistedToken] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('recruitai-auth');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed?.state?.token) {
+            setHasPersistedToken(true);
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
     const checkHydration = () => {
       if (useAuthStore.persist.hasHydrated()) {
         setIsHydrated(true);
@@ -72,7 +87,9 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
       <div className="flex items-center justify-center min-h-screen bg-background text-foreground">
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm text-muted-foreground animate-pulse">Verifying credentials...</p>
+          <p className="text-sm text-muted-foreground animate-pulse">
+            {hasPersistedToken ? 'Verifying credentials...' : 'Loading...'}
+          </p>
         </div>
       </div>
     );
