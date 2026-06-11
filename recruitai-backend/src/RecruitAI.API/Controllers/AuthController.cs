@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using RecruitAI.API.Services;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,7 +12,7 @@ namespace RecruitAI.API.Controllers;
 [ApiController]
 [Route("api/auth")]
 [Produces("application/json")]
-public sealed class AuthController(IConfiguration configuration, IUserService userService) : ControllerBase
+public sealed class AuthController(IConfiguration configuration, IUserService userService, ILogger<AuthController> logger) : ControllerBase
 {
     // ── Token lifetimes ───────────────────────────────────────────────────────────
     private int AccessTokenMinutes =>
@@ -122,6 +123,63 @@ public sealed class AuthController(IConfiguration configuration, IUserService us
         return Ok(new { email, role, fullName });
     }
 
+    // ── Forgot Password ───────────────────────────────────────────────────────────
+    [HttpPost("forgot-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(request.Email))
+            return BadRequest(Error400("Email is required."));
+
+        var token = await userService.GeneratePasswordResetTokenAsync(request.Email, ct);
+        if (token is not null)
+        {
+            // Simulate sending an email by logging it in a highly visible banner in the console
+            var resetLink = $"http://localhost:3000/reset-password?email={Uri.EscapeDataString(request.Email)}&token={Uri.EscapeDataString(token)}";
+            
+            logger.LogWarning(
+                "\n============================================================\n" +
+                "[SIMULATED EMAIL SERVICE]\n" +
+                $"To: {request.Email}\n" +
+                "Subject: Reset Your RecruitAI Password\n\n" +
+                "Please use the link below to verify your email and reset your password:\n" +
+                $"{resetLink}\n" +
+                "============================================================"
+            );
+        }
+
+        return Ok(new { Message = "If your email is registered in our system, a password reset link has been sent to it." });
+    }
+
+    // ── Reset Password ────────────────────────────────────────────────────────────
+    [HttpPost("reset-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(request.Email) || 
+            string.IsNullOrWhiteSpace(request.Token) || 
+            string.IsNullOrWhiteSpace(request.NewPassword))
+        {
+            return BadRequest(Error400("Email, Token, and NewPassword are required."));
+        }
+
+        if (request.NewPassword.Length < 6)
+            return BadRequest(Error400("Password must be at least 6 characters."));
+
+        var success = await userService.ResetPasswordAsync(request.Email, request.Token, request.NewPassword, ct);
+        if (!success)
+        {
+            return BadRequest(new ProblemDetails
+            {
+                Status = 400,
+                Title = "Invalid or expired token",
+                Detail = "The password reset token is invalid or has expired. Please request a new password reset."
+            });
+        }
+
+        return Ok(new { Message = "Password has been reset successfully." });
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────────
     private async Task<AuthResponse> IssueTokens(UserRecord user, CancellationToken ct)
     {
@@ -172,3 +230,5 @@ public record LoginRequest(string Email, string Password);
 public record RegisterRequest(string Email, string Password, string FullName, string Role);
 public record RefreshRequest(string Email, string RefreshToken);
 public record AuthResponse(string Token, string RefreshToken, string Email, string Role, string FullName);
+public record ForgotPasswordRequest(string Email);
+public record ResetPasswordRequest(string Email, string Token, string NewPassword);

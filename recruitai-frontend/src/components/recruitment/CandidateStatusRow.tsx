@@ -23,23 +23,23 @@ export function CandidateStatusRow({ candidate }: CandidateStatusRowProps) {
 
   const statusConfigs = {
     Queued: {
-      icon: <Clock className="w-4 h-4 text-slate-400" />,
-      chip: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
+      icon: <Clock className="w-4 h-4 text-slate-600 dark:text-slate-400" />,
+      chip: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20',
       label: 'Queued',
     },
     Processing: {
-      icon: <RefreshCw className="w-4 h-4 text-violet-400 animate-spin" />,
-      chip: 'bg-violet-500/10 text-violet-400 border-violet-500/20 animate-pulse',
+      icon: <RefreshCw className="w-4 h-4 text-violet-600 dark:text-violet-400 animate-spin" />,
+      chip: 'bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20 animate-pulse',
       label: 'Processing',
     },
     Scored: {
-      icon: <CheckCircle className="w-4 h-4 text-emerald-400" />,
-      chip: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+      icon: <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />,
+      chip: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
       label: 'Scored',
     },
     Failed: {
-      icon: <XCircle className="w-4 h-4 text-rose-400" />,
-      chip: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+      icon: <XCircle className="w-4 h-4 text-rose-600 dark:text-rose-400" />,
+      chip: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20',
       label: 'Failed',
     },
   };
@@ -47,24 +47,24 @@ export function CandidateStatusRow({ candidate }: CandidateStatusRowProps) {
   const config = statusConfigs[candidate.status];
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
-    if (score >= 60) return 'text-amber-400 bg-amber-500/10 border-amber-500/20';
-    return 'text-rose-400 bg-rose-500/10 border-rose-500/20';
+    if (score >= 80) return 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+    if (score >= 60) return 'text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20';
+    return 'text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/20';
   };
 
   return (
-    <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.02] gap-4 transition-all animate-in fade-in duration-300">
+    <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-card/40 hover:bg-card/60 gap-4 transition-all animate-in fade-in duration-300">
       
       {/* Candidate Name & Info */}
       <div className="flex items-center gap-3 min-w-0">
-        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center font-bold text-muted-foreground text-xs shrink-0">
+        <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center font-bold text-muted-foreground text-xs shrink-0">
           {candidate.name.charAt(0)}
         </div>
         
         <div className="flex flex-col min-w-0">
           <span className="text-sm font-semibold text-foreground truncate">{candidate.name}</span>
           {candidate.errorMessage && (
-            <span className="text-[10px] text-rose-400 leading-snug truncate mt-0.5" title={candidate.errorMessage}>
+            <span className="text-[10px] text-rose-600 dark:text-rose-400 leading-snug truncate mt-0.5" title={candidate.errorMessage}>
               {candidate.errorMessage}
             </span>
           )}

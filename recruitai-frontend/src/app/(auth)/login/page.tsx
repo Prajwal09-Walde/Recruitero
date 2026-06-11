@@ -71,7 +71,7 @@ export default function LoginPage() {
           <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-violet-600 to-fuchsia-600 flex items-center justify-center font-bold text-white text-xl shadow-lg shadow-violet-500/20 mb-2">
             R
           </div>
-          <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-neutral-400 bg-clip-text text-transparent">
+          <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-neutral-900 to-neutral-500 dark:from-white dark:to-neutral-400 bg-clip-text text-transparent">
             RecruitAI Intelligence
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -94,16 +94,25 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-11 pr-4 text-sm placeholder-muted-foreground focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                className="w-full bg-background dark:bg-white/5 border border-border dark:border-white/10 text-foreground rounded-xl py-2.5 pl-11 pr-4 text-sm placeholder-muted-foreground focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
               />
             </div>
           </div>
 
           {/* Password */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Password
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Password
+              </label>
+              <button
+                type="button"
+                onClick={() => router.push('/forgot-password')}
+                className="text-xs text-violet-600 dark:text-violet-400 hover:underline font-semibold"
+              >
+                Forgot password?
+              </button>
+            </div>
             <div className="relative">
               <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
@@ -113,21 +122,21 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-11 pr-4 text-sm placeholder-muted-foreground focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                className="w-full bg-background dark:bg-white/5 border border-border dark:border-white/10 text-foreground rounded-xl py-2.5 pl-11 pr-4 text-sm placeholder-muted-foreground focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
               />
             </div>
           </div>
 
           {/* Info banner */}
-          <div className="flex items-start gap-2.5 bg-violet-500/5 border border-violet-500/15 rounded-xl p-3">
-            <ShieldCheck className="w-4 h-4 text-violet-400 mt-0.5 shrink-0" />
+          <div className="flex items-start gap-2.5 bg-violet-500/5 dark:bg-violet-500/5 border border-violet-500/20 dark:border-violet-500/15 rounded-xl p-3">
+            <ShieldCheck className="w-4 h-4 text-violet-600 dark:text-violet-400 mt-0.5 shrink-0" />
             <p className="text-xs text-muted-foreground leading-relaxed">
               Your role (HR Admin, Recruiter, or Viewer) is determined by your registered account.
               Don&apos;t have an account?{' '}
               <button
                 type="button"
                 onClick={() => router.push('/register')}
-                className="text-violet-400 hover:underline font-medium"
+                className="text-violet-600 dark:text-violet-400 hover:underline font-bold"
               >
                 Register here
               </button>

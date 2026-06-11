@@ -18,6 +18,8 @@ public class AppUser : BaseEntity
     /// <summary>Opaque refresh token stored in MongoDB for server-side validation.</summary>
     public string? RefreshToken { get; private set; }
     public DateTime? RefreshTokenExpiry { get; private set; }
+    public string? PasswordResetToken { get; private set; }
+    public DateTime? PasswordResetExpiry { get; private set; }
 
     // Required by MongoDB deserialization
     private AppUser() { }
@@ -42,5 +44,18 @@ public class AppUser : BaseEntity
     {
         RefreshToken       = null;
         RefreshTokenExpiry = null;
+    }
+
+    public void SetPasswordResetToken(string token, DateTime expiry)
+    {
+        PasswordResetToken = token;
+        PasswordResetExpiry = expiry;
+    }
+
+    public void ResetPassword(string newPasswordHash)
+    {
+        PasswordHash = newPasswordHash;
+        PasswordResetToken = null;
+        PasswordResetExpiry = null;
     }
 }

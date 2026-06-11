@@ -156,7 +156,7 @@ export default function JobDetailPage() {
 
   if (!job) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 border border-white/5 bg-white/5 rounded-2xl gap-3 text-center min-h-[300px]">
+      <div className="flex flex-col items-center justify-center p-8 border border-border bg-card/60 rounded-2xl gap-3 text-center min-h-[300px]">
         <AlertTriangle className="w-8 h-8 text-amber-500" />
         <h4 className="font-semibold text-sm">Job Posting Not Found</h4>
         <p className="text-xs text-muted-foreground">The job opening may have been deleted or archived.</p>
@@ -175,14 +175,14 @@ export default function JobDetailPage() {
       
       {/* Reconnecting banner */}
       {isReconnecting && (
-        <div className="bg-amber-500/10 border border-amber-500/20 text-amber-400 p-3 rounded-xl flex items-center gap-2 text-xs leading-none">
+        <div className="bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 p-3 rounded-xl flex items-center gap-2 text-xs leading-none">
           <RefreshCw className="w-4 h-4 animate-spin shrink-0" />
           <span>Real-time connection interrupted. Reconnecting and syncing pipeline...</span>
         </div>
       )}
 
       {/* 1. Job Header Bar */}
-      <div className="glass-panel p-6 rounded-2xl border border-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="glass-panel p-6 rounded-2xl border border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex flex-col gap-1.5 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-2xl font-bold tracking-tight text-foreground truncate">
@@ -191,7 +191,7 @@ export default function JobDetailPage() {
             <span
               className={cn(
                 "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider",
-                job.isActive ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-slate-500/10 text-slate-400 border border-slate-500/20"
+                job.isActive ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" : "bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20"
               )}
             >
               {job.isActive ? 'Active' : 'Closed'}
@@ -212,7 +212,7 @@ export default function JobDetailPage() {
         <div className="flex items-center gap-3 w-full sm:w-auto shrink-0 flex-wrap">
           {/* Live Processing counter */}
           {processingCount > 0 && (
-            <div className="flex items-center gap-2 bg-violet-500/15 border border-violet-500/25 px-3.5 py-2 rounded-xl text-xs font-semibold animate-pulse text-violet-300">
+            <div className="flex items-center gap-2 bg-violet-500/10 dark:bg-violet-500/15 border border-violet-500/20 dark:border-violet-500/25 px-3.5 py-2 rounded-xl text-xs font-semibold animate-pulse text-violet-600 dark:text-violet-300">
               <RefreshCw className="w-3.5 h-3.5 animate-spin" />
               <span>{processingCount} being processed</span>
             </div>
@@ -234,7 +234,7 @@ export default function JobDetailPage() {
       {isViewer ? (
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-6 items-start">
           {/* Left: Job Description (60% equivalent) */}
-          <div className="lg:col-span-6 w-full glass-panel p-6 rounded-2xl border border-white/5 flex flex-col gap-4">
+          <div className="lg:col-span-6 w-full glass-panel p-6 rounded-2xl border border-border flex flex-col gap-4">
             <div>
               <h3 className="font-bold text-lg">Job Description</h3>
               <p className="text-xs text-muted-foreground mt-0.5">Please review the role details and requirements.</p>
@@ -252,11 +252,11 @@ export default function JobDetailPage() {
               (() => {
                 const userApplication = leaderboard.candidates[0];
                 return (
-                  <div className="glass-panel p-6 rounded-2xl border border-white/5 flex flex-col gap-4">
+                  <div className="glass-panel p-6 rounded-2xl border border-border flex flex-col gap-4">
                     <h3 className="font-bold text-sm text-foreground uppercase tracking-wider">Application Status</h3>
                     
-                    <div className="flex items-center gap-3 bg-white/[0.02] border border-white/5 p-4 rounded-xl">
-                      <div className="w-12 h-12 rounded-xl bg-violet-600/10 flex items-center justify-center font-bold text-violet-400 text-lg">
+                    <div className="flex items-center gap-3 bg-muted/20 border border-border p-4 rounded-xl">
+                      <div className="w-12 h-12 rounded-xl bg-violet-500/10 dark:bg-violet-600/10 flex items-center justify-center font-bold text-violet-600 dark:text-violet-400 text-lg">
                         {userApplication.fitScore ? `${Math.round(userApplication.fitScore)}%` : '--'}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -290,7 +290,7 @@ export default function JobDetailPage() {
                               ? "bg-emerald-500 text-black"
                               : userApplication.status === 'Processing'
                               ? "bg-violet-500 text-white animate-pulse"
-                              : "bg-white/5 text-muted-foreground"
+                              : "bg-muted text-muted-foreground"
                           )}>
                             {['Scored', 'SentToRecruiter', 'Shortlisted', 'Rejected'].includes(userApplication.status) ? '✓' : '2'}
                           </div>
@@ -298,7 +298,7 @@ export default function JobDetailPage() {
                             "w-0.5 h-10",
                             ['Scored', 'SentToRecruiter', 'Shortlisted', 'Rejected'].includes(userApplication.status)
                               ? "bg-emerald-500/30"
-                              : "bg-white/5"
+                              : "bg-muted"
                           )} />
                         </div>
                         <div>
@@ -319,7 +319,7 @@ export default function JobDetailPage() {
                             "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold",
                             ['SentToRecruiter', 'Shortlisted', 'Rejected'].includes(userApplication.status)
                               ? "bg-emerald-500 text-black"
-                              : "bg-white/5 text-muted-foreground"
+                              : "bg-muted text-muted-foreground"
                           )}>
                             {['SentToRecruiter', 'Shortlisted', 'Rejected'].includes(userApplication.status) ? '✓' : '3'}
                           </div>
@@ -327,7 +327,7 @@ export default function JobDetailPage() {
                             "w-0.5 h-10",
                             ['SentToRecruiter', 'Shortlisted', 'Rejected'].includes(userApplication.status)
                               ? "bg-emerald-500/30"
-                              : "bg-white/5"
+                              : "bg-muted"
                           )} />
                         </div>
                         <div>
@@ -349,7 +349,7 @@ export default function JobDetailPage() {
                               ? "bg-emerald-500 text-black"
                               : userApplication.status === 'Rejected'
                               ? "bg-rose-500 text-white"
-                              : "bg-white/5 text-muted-foreground"
+                              : "bg-muted text-muted-foreground"
                           )}>
                             {userApplication.status === 'Shortlisted' ? '✓' : userApplication.status === 'Rejected' ? '✗' : '4'}
                           </div>
@@ -369,7 +369,7 @@ export default function JobDetailPage() {
               })()
             ) : (
               /* ── APPLY PORTAL ── */
-              <div className="glass-panel p-6 rounded-2xl border border-white/5 flex flex-col gap-4">
+              <div className="glass-panel p-6 rounded-2xl border border-border flex flex-col gap-4">
                 <div>
                   <h3 className="font-bold text-sm text-foreground uppercase tracking-wider">Apply for this Role</h3>
                   <p className="text-xs text-muted-foreground mt-0.5">Submit your resume to align your skills.</p>
@@ -383,12 +383,12 @@ export default function JobDetailPage() {
                         "border border-dashed rounded-xl p-6 text-center cursor-pointer transition-all flex flex-col items-center justify-center h-40 gap-2",
                         isDragActive
                           ? "border-violet-500 bg-violet-500/5"
-                          : "border-white/10 hover:border-violet-500/30 hover:bg-white/[0.01]"
+                          : "border-border hover:border-violet-500/30 hover:bg-muted/10"
                       )}
                     >
                       <input {...getInputProps()} />
                       <div className="w-8 h-8 rounded-full bg-violet-500/10 flex items-center justify-center">
-                        <FileUp className="w-4 h-4 text-violet-400" />
+                        <FileUp className="w-4 h-4 text-violet-600 dark:text-violet-400" />
                       </div>
                       <div className="space-y-0.5">
                         <p className="text-xs font-bold">Drag & drop your resume, or browse</p>
@@ -397,15 +397,15 @@ export default function JobDetailPage() {
                     </div>
 
                     {files.length > 0 && (
-                      <div className="p-3 rounded-lg border border-white/5 bg-white/[0.01] flex items-center justify-between">
+                      <div className="p-3 rounded-lg border border-border bg-muted/20 flex items-center justify-between">
                         <div className="flex items-center gap-2 min-w-0">
-                          <FileText className="w-4 h-4 text-violet-400 shrink-0" />
+                          <FileText className="w-4 h-4 text-violet-600 dark:text-violet-400 shrink-0" />
                           <span className="text-xs font-semibold truncate text-foreground">{files[0].name}</span>
                         </div>
                         <button
                           type="button"
                           onClick={() => setFiles([])}
-                          className="text-xs text-rose-400 hover:underline shrink-0"
+                          className="text-xs text-rose-600 dark:text-rose-400 hover:underline shrink-0"
                         >
                           Remove
                         </button>
@@ -418,7 +418,7 @@ export default function JobDetailPage() {
                           <span>Uploading Resume...</span>
                           <span className="tabular-nums">{progress}%</span>
                         </div>
-                        <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden border border-white/5">
+                        <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden border border-border">
                           <div
                             className="bg-primary h-full rounded-full transition-all duration-300"
                             style={{ width: `${progress}%` }}
@@ -437,8 +437,8 @@ export default function JobDetailPage() {
                     )}
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center p-4 border border-dashed border-white/5 rounded-xl text-center min-h-[160px] gap-2">
-                    <CheckCircle className="w-8 h-8 text-emerald-400 animate-bounce" />
+                  <div className="flex flex-col items-center justify-center p-4 border border-dashed border-border rounded-xl text-center min-h-[160px] gap-2">
+                    <CheckCircle className="w-8 h-8 text-emerald-600 dark:text-emerald-400 animate-bounce" />
                     <span className="text-xs font-bold">Application Received</span>
                     <span className="text-[10px] text-muted-foreground max-w-[180px]">
                       Loading status card. AI engine is currently processing your fit score...

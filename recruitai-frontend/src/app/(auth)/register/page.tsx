@@ -63,7 +63,7 @@ export default function RegisterPage() {
           <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-violet-600 to-fuchsia-600 flex items-center justify-center font-bold text-white text-xl shadow-lg shadow-violet-500/20 mb-2">
             R
           </div>
-          <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-neutral-400 bg-clip-text text-transparent">
+          <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-neutral-900 to-neutral-500 dark:from-white dark:to-neutral-400 bg-clip-text text-transparent">
             Get Started with RecruitAI
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -84,7 +84,7 @@ export default function RegisterPage() {
                 placeholder="Jane Doe"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-11 pr-4 text-sm placeholder-muted-foreground focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                className="w-full bg-background dark:bg-white/5 border border-border dark:border-white/10 text-foreground rounded-xl py-2.5 pl-11 pr-4 text-sm placeholder-muted-foreground focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
               />
             </div>
           </div>
@@ -101,7 +101,7 @@ export default function RegisterPage() {
                 placeholder="jane@company.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-11 pr-4 text-sm placeholder-muted-foreground focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                className="w-full bg-background dark:bg-white/5 border border-border dark:border-white/10 text-foreground rounded-xl py-2.5 pl-11 pr-4 text-sm placeholder-muted-foreground focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
               />
             </div>
           </div>
@@ -118,7 +118,7 @@ export default function RegisterPage() {
                 placeholder="Create password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-11 pr-4 text-sm placeholder-muted-foreground focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
+                className="w-full bg-background dark:bg-white/5 border border-border dark:border-white/10 text-foreground rounded-xl py-2.5 pl-11 pr-4 text-sm placeholder-muted-foreground focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-all"
               />
             </div>
           </div>
@@ -136,8 +136,8 @@ export default function RegisterPage() {
                   onClick={() => setRole(r)}
                   className={`py-2 rounded-xl text-xs font-semibold border transition-all ${
                     role === r
-                      ? 'border-violet-500 bg-violet-500/10'
-                      : 'border-white/5 bg-white/5 hover:bg-white/10'
+                      ? 'border-violet-500 bg-violet-500/10 text-violet-600 dark:text-violet-400'
+                      : 'border-border dark:border-white/5 bg-background dark:bg-white/5 hover:bg-muted dark:hover:bg-white/10 text-foreground'
                   }`}
                 >
                   {r === 'HRAdmin' ? 'HR Admin' : 'Recruiter'}

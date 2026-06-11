@@ -86,6 +86,39 @@ public class UserService(MongoDbContext db) : IUserService
         await Save(user, ct);
     }
 
+    // ── Password reset: generate token ───────────────────────────────────────────
+    public async Task<string?> GeneratePasswordResetTokenAsync(string email, CancellationToken ct = default)
+    {
+        var user = await FindByEmail(email, ct);
+        if (user is null) return null;
+
+        var token = Convert.ToBase64String(Guid.NewGuid().ToByteArray()) + 
+                    Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+        token = token.Replace("+", "").Replace("/", "").Replace("=", "").Substring(0, 32);
+
+        var expiry = DateTime.UtcNow.AddHours(1);
+        user.SetPasswordResetToken(token, expiry);
+        await Save(user, ct);
+
+        return token;
+    }
+
+    // ── Password reset: reset password ───────────────────────────────────────────
+    public async Task<bool> ResetPasswordAsync(string email, string token, string newPassword, CancellationToken ct = default)
+    {
+        var user = await FindByEmail(email, ct);
+        if (user is null) return false;
+        if (string.IsNullOrEmpty(user.PasswordResetToken) || user.PasswordResetToken != token) return false;
+        if (user.PasswordResetExpiry < DateTime.UtcNow) return false;
+
+        var newHash = BCrypt.Net.BCrypt.HashPassword(newPassword, workFactor: 12);
+        user.ResetPassword(newHash);
+        user.RevokeRefreshToken();
+
+        await Save(user, ct);
+        return true;
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────────
     private async Task<AppUser?> FindByEmail(string email, CancellationToken ct)
     {

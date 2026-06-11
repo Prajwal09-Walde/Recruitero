@@ -59,21 +59,21 @@ export function LeaderboardTable({
   });
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'bg-emerald-500 text-emerald-400';
-    if (score >= 60) return 'bg-amber-500 text-amber-400';
-    return 'bg-rose-500 text-rose-400';
+    if (score >= 80) return 'bg-emerald-500 text-emerald-600 dark:text-emerald-400';
+    if (score >= 60) return 'bg-amber-500 text-amber-600 dark:text-amber-400';
+    return 'bg-rose-500 text-rose-600 dark:text-rose-400';
   };
 
   const getRecommendation = (score: number) => {
-    if (score >= 80) return { text: 'Strong Fit', className: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' };
-    if (score >= 60) return { text: 'Potential Fit', className: 'text-amber-400 bg-amber-500/10 border-amber-500/20' };
-    return { text: 'Unaligned', className: 'text-rose-400 bg-rose-500/10 border-rose-500/20' };
+    if (score >= 80) return { text: 'Strong Fit', className: 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20' };
+    if (score >= 60) return { text: 'Potential Fit', className: 'text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20' };
+    return { text: 'Unaligned', className: 'text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/20' };
   };
 
   const totalPages = Math.ceil(totalApplicants / pageSize) || 1;
 
   return (
-    <div className="flex flex-col gap-4 w-full glass-panel p-6 rounded-2xl border border-white/5">
+    <div className="flex flex-col gap-4 w-full glass-panel p-6 rounded-2xl border border-border">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
           <h3 className="font-bold text-lg">Fit Score Leaderboard</h3>
@@ -81,7 +81,7 @@ export function LeaderboardTable({
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex bg-white/5 border border-white/5 p-1 rounded-xl">
+        <div className="flex bg-muted/40 border border-border p-1 rounded-xl">
           {(['All', 'Scored', 'Failed'] as const).map((status) => (
             <button
               key={status}
@@ -166,10 +166,10 @@ export function LeaderboardTable({
                 const scoreColor = getScoreColor(cand.fitScore);
 
                 return (
-                  <tr key={cand.applicationId} className="group hover:bg-white/[0.02] transition-colors">
+                  <tr key={cand.applicationId} className="group hover:bg-muted/30 transition-colors">
                     <td className="py-4 px-4 font-bold text-muted-foreground">
                       {cand.rank <= 3 ? (
-                        <span className="flex items-center gap-1 text-amber-400 font-extrabold">
+                        <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 font-extrabold">
                           <Award className="w-4 h-4 shrink-0" />
                           {cand.rank}
                         </span>
@@ -182,13 +182,13 @@ export function LeaderboardTable({
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-2.5 min-w-[150px]">
-                        <div className="w-full bg-white/5 rounded-full h-2 overflow-hidden border border-white/5">
+                        <div className="w-full bg-muted rounded-full h-2 overflow-hidden border border-border">
                           <div
                             className={cn("h-full rounded-full transition-all duration-500", scoreColor.split(' ')[0])}
                             style={{ width: `${cand.fitScore}%` }}
                           />
                         </div>
-                        <span className={cn("text-xs font-bold shrink-0 tabular-nums", scoreColor.split(' ')[1])}>
+                        <span className={cn("text-xs font-bold shrink-0 tabular-nums", scoreColor.split(' ').slice(1).join(' '))}>
                           {Math.round(cand.fitScore)}%
                         </span>
                       </div>
@@ -202,13 +202,13 @@ export function LeaderboardTable({
                       <span
                         className={cn(
                           "inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold uppercase tracking-wider",
-                          cand.status === 'Scored' && 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20',
-                          cand.status === 'SentToRecruiter' && 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
-                          cand.status === 'Shortlisted' && 'bg-teal-500/10 text-teal-400 border border-teal-500/20',
-                          cand.status === 'Rejected' && 'bg-rose-500/10 text-rose-400 border border-rose-500/20',
-                          cand.status === 'Failed' && 'bg-rose-500/10 text-rose-400 border border-rose-500/20',
-                          cand.status === 'Processing' && 'bg-violet-500/10 text-violet-400 border border-violet-500/20 animate-pulse',
-                          cand.status === 'Queued' && 'bg-slate-500/10 text-slate-400 border border-slate-500/20'
+                          cand.status === 'Scored' && 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20',
+                          cand.status === 'SentToRecruiter' && 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20',
+                          cand.status === 'Shortlisted' && 'bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20',
+                          cand.status === 'Rejected' && 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20',
+                          cand.status === 'Failed' && 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20',
+                          cand.status === 'Processing' && 'bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20 animate-pulse',
+                          cand.status === 'Queued' && 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20'
                         )}
                       >
                         {cand.status === 'SentToRecruiter' ? 'Sent to Recruiter' : cand.status}
@@ -220,7 +220,7 @@ export function LeaderboardTable({
                           <button
                             type="button"
                             onClick={() => onSendToRecruiter(cand.applicationId)}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-blue-500/20 bg-blue-500/5 hover:bg-blue-500 text-blue-300 hover:text-white transition-all shadow-sm"
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-blue-500/20 bg-blue-500/5 hover:bg-blue-600 text-blue-600 dark:text-blue-300 hover:text-white transition-all shadow-sm"
                           >
                             Send to Recruiter
                           </button>
@@ -229,7 +229,7 @@ export function LeaderboardTable({
                           <button
                             type="button"
                             onClick={() => onViewKit(cand.applicationId)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border border-violet-500/20 bg-violet-500/5 hover:bg-violet-500 text-violet-300 hover:text-white transition-all shadow-sm"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border border-violet-500/20 bg-violet-500/5 hover:bg-violet-600 text-violet-600 dark:text-violet-300 hover:text-white transition-all shadow-sm"
                           >
                             <Eye className="w-3.5 h-3.5" />
                             View Kit
@@ -249,7 +249,7 @@ export function LeaderboardTable({
 
       {/* Pagination controls */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between border-t border-white/5 pt-4">
+        <div className="flex items-center justify-between border-t border-border pt-4">
           <span className="text-xs text-muted-foreground">
             Page {page} of {totalPages}
           </span>
@@ -257,14 +257,14 @@ export function LeaderboardTable({
             <button
               onClick={() => onPageChange(page - 1)}
               disabled={page === 1}
-              className="px-3 py-1 text-xs font-semibold rounded-lg bg-white/5 border border-white/5 disabled:opacity-40 transition-colors"
+              className="px-3 py-1 text-xs font-semibold rounded-lg bg-muted/40 border border-border disabled:opacity-40 transition-colors"
             >
               Previous
             </button>
             <button
               onClick={() => onPageChange(page + 1)}
               disabled={page === totalPages}
-              className="px-3 py-1 text-xs font-semibold rounded-lg bg-white/5 border border-white/5 disabled:opacity-40 transition-colors"
+              className="px-3 py-1 text-xs font-semibold rounded-lg bg-muted/40 border border-border disabled:opacity-40 transition-colors"
             >
               Next
             </button>

@@ -26,6 +26,17 @@ public interface IUserService
     /// Revokes the stored refresh token for the user (logout).
     /// </summary>
     Task RevokeRefreshTokenAsync(string email, CancellationToken ct = default);
+
+    /// <summary>
+    /// Generates a password reset token for the specified user email, storing it in MongoDB.
+    /// Returns the generated token, or null if the user does not exist.
+    /// </summary>
+    Task<string?> GeneratePasswordResetTokenAsync(string email, CancellationToken ct = default);
+
+    /// <summary>
+    /// Resets the user's password if the email and reset token are valid and not expired.
+    /// </summary>
+    Task<bool> ResetPasswordAsync(string email, string token, string newPassword, CancellationToken ct = default);
 }
 
 /// <summary>Lightweight projection returned by IUserService — avoids leaking PasswordHash.</summary>

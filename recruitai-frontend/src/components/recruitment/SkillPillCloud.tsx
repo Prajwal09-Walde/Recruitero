@@ -79,7 +79,7 @@ export function SkillPillCloud({ skills, onChange }: SkillPillCloudProps) {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-5 rounded-xl border border-white/5 bg-white/5 animate-in fade-in slide-in-from-top-2 duration-300">
+    <div className="flex flex-col gap-4 p-5 rounded-xl border border-border bg-muted/10 animate-in fade-in slide-in-from-top-2 duration-300">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
           <h4 className="text-sm font-semibold">AI Skill Graph Profile</h4>
@@ -97,8 +97,8 @@ export function SkillPillCloud({ skills, onChange }: SkillPillCloudProps) {
             className={cn(
               "p-2 rounded-lg border transition-all",
               feedback === 'up'
-                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                : "border-white/5 bg-white/5 text-muted-foreground hover:text-foreground hover:bg-white/10"
+                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                : "border-border bg-background dark:bg-white/5 text-muted-foreground hover:text-foreground hover:bg-muted dark:hover:bg-white/10"
             )}
           >
             <ThumbsUp className="w-4 h-4" />
@@ -109,8 +109,8 @@ export function SkillPillCloud({ skills, onChange }: SkillPillCloudProps) {
             className={cn(
               "p-2 rounded-lg border transition-all",
               feedback === 'down'
-                ? "border-amber-500/30 bg-amber-500/10 text-amber-400"
-                : "border-white/5 bg-white/5 text-muted-foreground hover:text-foreground hover:bg-white/10"
+                ? "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                : "border-border bg-background dark:bg-white/5 text-muted-foreground hover:text-foreground hover:bg-muted dark:hover:bg-white/10"
             )}
           >
             <ThumbsDown className="w-4 h-4" />
@@ -123,12 +123,12 @@ export function SkillPillCloud({ skills, onChange }: SkillPillCloudProps) {
         {/* Required skills */}
         {skills.requiredSkills.length > 0 && (
           <div className="space-y-1.5">
-            <span className="text-[10px] font-bold text-violet-400 uppercase tracking-wider">Required Skills</span>
+            <span className="text-[10px] font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wider">Required Skills</span>
             <div className="flex flex-wrap gap-2">
               {skills.requiredSkills.map((s, idx) => (
                 <div
                   key={`req-${idx}`}
-                  className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-violet-500/10 border border-violet-500/20 text-violet-300 shadow-sm"
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-violet-500/10 border border-violet-500/20 text-violet-700 dark:text-violet-300 shadow-sm"
                 >
                   <span>{s.skill}</span>
                   <span className="text-[10px] opacity-65 bg-violet-500/20 px-1 py-0.5 rounded">
@@ -138,7 +138,7 @@ export function SkillPillCloud({ skills, onChange }: SkillPillCloudProps) {
                     <button
                       type="button"
                       onClick={() => removeRequiredSkill(idx)}
-                      className="hover:text-rose-400 transition-colors"
+                      className="hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -152,19 +152,19 @@ export function SkillPillCloud({ skills, onChange }: SkillPillCloudProps) {
         {/* Nice to have */}
         {skills.niceToHaveSkills.length > 0 && (
           <div className="space-y-1.5">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nice-to-Have Skills</span>
+            <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Nice-to-Have Skills</span>
             <div className="flex flex-wrap gap-2">
               {skills.niceToHaveSkills.map((s, idx) => (
                 <div
                   key={`nice-${idx}`}
-                  className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-500/10 border border-slate-500/20 text-slate-300"
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-500/10 border border-slate-500/20 text-slate-700 dark:text-slate-300"
                 >
                   <span>{s.skill}</span>
                   {editing && (
                     <button
                       type="button"
                       onClick={() => removeNiceToHaveSkill(idx)}
-                      className="hover:text-rose-400 transition-colors"
+                      className="hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -178,19 +178,19 @@ export function SkillPillCloud({ skills, onChange }: SkillPillCloudProps) {
         {/* Domain keywords */}
         {skills.domainKeywords.length > 0 && (
           <div className="space-y-1.5">
-            <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Domain Keywords</span>
+            <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Domain Keywords</span>
             <div className="flex flex-wrap gap-2">
               {skills.domainKeywords.map((k, idx) => (
                 <div
                   key={`domain-${idx}`}
-                  className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 border border-amber-500/20 text-amber-300"
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300"
                 >
                   <span>{k}</span>
                   {editing && (
                     <button
                       type="button"
                       onClick={() => removeDomainKeyword(idx)}
-                      className="hover:text-rose-400 transition-colors"
+                      className="hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -204,18 +204,18 @@ export function SkillPillCloud({ skills, onChange }: SkillPillCloudProps) {
 
       {/* Editing tag input interface */}
       {editing && (
-        <form onSubmit={handleAddSkill} className="flex flex-wrap items-center gap-2 pt-3 border-t border-white/5">
+        <form onSubmit={handleAddSkill} className="flex flex-wrap items-center gap-2 pt-3 border-t border-border">
           <input
             type="text"
             placeholder="Add custom skill or keyword..."
             value={newSkillName}
             onChange={(e) => setNewSkillName(e.target.value)}
-            className="flex-1 min-w-[200px] bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-violet-500"
+            className="flex-1 min-w-[200px] bg-background dark:bg-white/5 border border-border dark:border-white/10 text-foreground rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-violet-500"
           />
           <select
             value={newSkillCategory}
             onChange={(e: any) => setNewSkillCategory(e.target.value)}
-            className="bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-xs focus:outline-none"
+            className="bg-background dark:bg-white/5 border border-border dark:border-white/10 text-foreground rounded-lg px-2 py-1.5 text-xs focus:outline-none"
           >
             <option value="required">Required</option>
             <option value="niceToHave">Nice-to-Have</option>

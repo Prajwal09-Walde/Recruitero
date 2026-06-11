@@ -107,7 +107,7 @@ export default function CreateJobPage() {
   return (
     <div className="flex flex-col gap-6 w-full max-w-4xl mx-auto py-4">
       <div className="flex flex-col gap-1.5">
-        <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white to-neutral-400 bg-clip-text text-transparent">
+        <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-neutral-900 to-neutral-500 dark:from-white dark:to-neutral-400 bg-clip-text text-transparent">
           Create Job Posting
         </h1>
         <p className="text-sm text-muted-foreground">

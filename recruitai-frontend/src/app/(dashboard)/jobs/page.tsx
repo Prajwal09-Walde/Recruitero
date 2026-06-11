@@ -24,9 +24,9 @@ export default function JobsListPage() {
     <div className="flex flex-col gap-6 w-full max-w-5xl mx-auto py-4 animate-in fade-in duration-300">
       
       {/* Header section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
         <div className="flex flex-col gap-1.5">
-          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white to-neutral-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-neutral-900 to-neutral-500 dark:from-white dark:to-neutral-400 bg-clip-text text-transparent">
             {isHrAdmin || user?.role === 'Recruiter' ? 'Jobs Dashboard' : 'Job Openings'}
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -53,12 +53,12 @@ export default function JobsListPage() {
       {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="glass-panel p-6 rounded-2xl border border-white/5 h-44 flex flex-col justify-between animate-pulse">
+            <div key={i} className="glass-panel p-6 rounded-2xl border border-border h-44 flex flex-col justify-between animate-pulse">
               <div className="space-y-3">
-                <div className="h-5 bg-white/5 rounded w-2/3" />
-                <div className="h-3 bg-white/5 rounded w-1/3" />
+                <div className="h-5 bg-black/5 dark:bg-white/5 rounded w-2/3" />
+                <div className="h-3 bg-black/5 dark:bg-white/5 rounded w-1/3" />
               </div>
-              <div className="h-8 bg-white/5 rounded w-24" />
+              <div className="h-8 bg-black/5 dark:bg-white/5 rounded w-24" />
             </div>
           ))}
         </div>
@@ -76,8 +76,8 @@ export default function JobsListPage() {
       {!isLoading && !error && jobs && (
         <>
           {jobs.length === 0 ? (
-            <div className="glass-panel p-10 rounded-2xl border border-white/5 text-center flex flex-col items-center justify-center min-h-[300px]">
-              <Briefcase className="w-12 h-12 text-white/10 mb-3" />
+            <div className="glass-panel p-10 rounded-2xl border border-border text-center flex flex-col items-center justify-center min-h-[300px]">
+              <Briefcase className="w-12 h-12 text-neutral-400/20 dark:text-white/10 mb-3" />
               <h3 className="text-lg font-bold text-foreground">No jobs posted yet</h3>
               <p className="text-sm text-muted-foreground max-w-xs mt-1">
                 {isHrAdmin 
@@ -101,17 +101,17 @@ export default function JobsListPage() {
                 <div
                   key={job.id}
                   onClick={() => router.push(`/jobs/${job.id}`)}
-                  className="group relative glass-panel p-6 rounded-2xl border border-white/5 hover:border-violet-500/30 bg-white/[0.01] hover:bg-white/[0.02] transition-all cursor-pointer flex flex-col justify-between h-48 shadow-lg shadow-black/5"
+                  className="group relative glass-panel p-6 rounded-2xl border border-border hover:border-primary/30 bg-card/40 hover:bg-card/60 transition-all cursor-pointer flex flex-col justify-between h-48 shadow-lg shadow-black/5"
                 >
                   {/* Hover subtle glow */}
                   <div className="absolute inset-0 bg-gradient-to-tr from-violet-600/5 to-fuchsia-600/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl pointer-events-none" />
 
                   <div className="flex flex-col gap-2 min-w-0 z-10">
                     <div className="flex items-start justify-between gap-2">
-                      <h2 className="text-lg font-bold text-foreground group-hover:text-violet-400 transition-colors truncate">
+                      <h2 className="text-lg font-bold text-foreground group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors truncate">
                         {job.title}
                       </h2>
-                      <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                      <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                         {job.isActive ? 'Active' : 'Closed'}
                       </span>
                     </div>
@@ -131,8 +131,8 @@ export default function JobsListPage() {
                     {job.description}
                   </p>
 
-                  <div className="flex items-center justify-between z-10 pt-2 border-t border-white/[0.03]">
-                    <span className="text-xs text-violet-400 group-hover:text-violet-300 font-semibold flex items-center gap-1">
+                  <div className="flex items-center justify-between z-10 pt-2 border-t border-border/40">
+                    <span className="text-xs text-violet-600 dark:text-violet-400 group-hover:text-violet-700 dark:group-hover:text-violet-300 font-semibold flex items-center gap-1">
                       {isHrAdmin || user?.role === 'Recruiter' ? 'View Pipeline' : 'View Details & Apply'}
                       <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
                     </span>
