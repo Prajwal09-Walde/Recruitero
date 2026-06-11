@@ -15,7 +15,7 @@ export const getApiUrl = (): string => {
   }
   // Server-side default: detect Vercel serverless function env or default to localhost
   if (process.env.VERCEL === '1') {
-    return 'https://api.production.recruitai.io';
+    return 'https://recruitai.io';
   }
   return 'http://localhost:5000';
 };
@@ -33,7 +33,8 @@ export const getHubUrl = (): string => {
   }
   // Server-side default: detect Vercel serverless function env or default to localhost
   if (process.env.VERCEL === '1') {
-    return 'https://api.production.recruitai.io/hubs/recruitment';
+    return 'https://recruitai.io/hubs/recruitment';
   }
   return 'http://localhost:5000/hubs/recruitment';
 };
+
