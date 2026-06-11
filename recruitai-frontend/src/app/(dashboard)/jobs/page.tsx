@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useJobList } from '@/hooks/useJobLeaderboard';
 import { useAuthStore } from '@/stores/authStore';
-import { Briefcase, Building2, Calendar, Plus, Sparkles, ArrowRight } from 'lucide-react';
+import { Briefcase, Building2, Calendar, Plus, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/lib/apiClient';
@@ -16,29 +16,9 @@ export default function JobsListPage() {
   const { user } = useAuthStore();
   const { data: jobs, isLoading, error } = useJobList();
   const queryClient = useQueryClient();
-  const [isImporting, setIsImporting] = useState(false);
 
   const isHrAdmin = user?.role === 'HRAdmin';
 
-  const handleImportDummyJobs = async () => {
-    setIsImporting(true);
-    try {
-      const response = await apiClient.post('/api/jobs/import-dummies');
-      const importedCount = Array.isArray(response.data) ? response.data.length : 0;
-      toast('Dummy Jobs Imported!', {
-        description: `Successfully imported ${importedCount} dummy jobs. The AI pipeline will process their skill graphs.`,
-        type: 'success',
-      });
-      queryClient.invalidateQueries({ queryKey: queryKeys.jobs.lists() });
-    } catch (err: any) {
-      toast('Failed to import dummy jobs', {
-        description: err.response?.data?.detail || 'An error occurred during import.',
-        type: 'error',
-      });
-    } finally {
-      setIsImporting(false);
-    }
-  };
 
   return (
     <div className="flex flex-col gap-6 w-full max-w-5xl mx-auto py-4 animate-in fade-in duration-300">
@@ -58,18 +38,6 @@ export default function JobsListPage() {
 
         {isHrAdmin && (
           <div className="flex items-center gap-3">
-            <button
-              onClick={handleImportDummyJobs}
-              disabled={isImporting}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold border border-white/10 hover:border-violet-500/50 bg-white/5 hover:bg-white/10 text-foreground transition-all shrink-0 disabled:opacity-50"
-            >
-              {isImporting ? (
-                <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <Sparkles className="w-4 h-4 text-violet-400" />
-              )}
-              {isImporting ? 'Importing...' : 'Import Dummy Jobs'}
-            </button>
             <button
               onClick={() => router.push('/jobs/new')}
               className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white shadow-lg shadow-violet-600/15 hover:shadow-violet-600/30 transition-all shrink-0"
@@ -118,18 +86,6 @@ export default function JobsListPage() {
               </p>
               {isHrAdmin && (
                 <div className="flex gap-3 mt-4">
-                  <button
-                    onClick={handleImportDummyJobs}
-                    disabled={isImporting}
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold border border-white/10 hover:border-violet-500/50 bg-white/5 hover:bg-white/10 text-foreground transition-all disabled:opacity-50"
-                  >
-                    {isImporting ? (
-                      <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <Sparkles className="w-3.5 h-3.5 text-violet-400" />
-                    )}
-                    {isImporting ? 'Importing...' : 'Import Dummy Jobs'}
-                  </button>
                   <button
                     onClick={() => router.push('/jobs/new')}
                     className="bg-violet-600 hover:bg-violet-500 text-white rounded-lg px-4 py-2 text-xs font-semibold shadow"
