@@ -23,8 +23,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove('theme-midnight', 'theme-ocean', 'theme-emerald', 'theme-steel', 'theme-amber');
-    root.classList.add(`theme-${theme}`);
+    if (theme === 'dark') {
+      root.classList.add('dark');
+      root.classList.remove('light');
+    } else {
+      root.classList.add('light');
+      root.classList.remove('dark');
+    }
   }, [theme]);
 
   return (

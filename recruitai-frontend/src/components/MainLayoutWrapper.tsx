@@ -4,7 +4,7 @@ import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { useUiStore } from '@/stores/uiStore';
-import { LogOut, PlusCircle, Menu, UserCircle, Briefcase } from 'lucide-react';
+import { LogOut, PlusCircle, Menu, UserCircle, Briefcase, Sun, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import apiClient from '@/lib/apiClient';
 import { useThemeStore, ThemeType } from '@/stores/themeStore';
@@ -17,18 +17,8 @@ export function MainLayoutWrapper({ children }: { children: React.ReactNode }) {
   const { theme, setTheme } = useThemeStore();
   const router = useRouter();
 
-  const themes: { id: ThemeType; label: string; colorClass: string }[] = [
-    { id: 'midnight', label: 'Midnight Purple', colorClass: 'bg-violet-600' },
-    { id: 'ocean', label: 'Ocean Blue', colorClass: 'bg-blue-500' },
-    { id: 'emerald', label: 'Forest Emerald', colorClass: 'bg-emerald-500' },
-    { id: 'steel', label: 'Classic Steel', colorClass: 'bg-slate-400' },
-    { id: 'amber', label: 'Sunset Amber', colorClass: 'bg-amber-500' },
-  ];
-
-  const toggleNextTheme = () => {
-    const currentIndex = themes.findIndex(t => t.id === theme);
-    const nextIndex = (currentIndex + 1) % themes.length;
-    setTheme(themes[nextIndex].id);
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
   if (isAuthPage) {
@@ -109,37 +99,44 @@ export function MainLayoutWrapper({ children }: { children: React.ReactNode }) {
             {sidebarOpen ? (
               <div className="flex flex-col gap-1.5">
                 <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold px-1">Theme</span>
-                <div className="flex items-center justify-between px-1 bg-white/5 p-1 rounded-lg border border-white/5">
-                  {themes.map((t) => (
-                    <button
-                      key={t.id}
-                      onClick={() => setTheme(t.id)}
-                      title={t.label}
-                      className={cn(
-                        "w-5 h-5 rounded-full transition-all duration-200 relative shrink-0",
-                        t.colorClass,
-                        theme === t.id ? "ring-2 ring-white scale-110 shadow-lg" : "hover:scale-105 opacity-80 hover:opacity-100"
-                      )}
-                    >
-                      {theme === t.id && (
-                        <span className="absolute inset-0 flex items-center justify-center text-[8px] font-bold text-white">✓</span>
-                      )}
-                    </button>
-                  ))}
+                <div className="grid grid-cols-2 gap-1 bg-black/5 dark:bg-white/5 p-1 rounded-xl border border-black/5 dark:border-white/5">
+                  <button
+                    onClick={() => setTheme('light')}
+                    className={cn(
+                      "flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all duration-200",
+                      theme === 'light'
+                        ? "bg-white text-black shadow-md border border-neutral-200/50"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <Sun className="w-3.5 h-3.5" />
+                    Light
+                  </button>
+                  <button
+                    onClick={() => setTheme('dark')}
+                    className={cn(
+                      "flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-semibold transition-all duration-200",
+                      theme === 'dark'
+                        ? "bg-white/10 text-white shadow-md border border-white/5"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <Moon className="w-3.5 h-3.5" />
+                    Dark
+                  </button>
                 </div>
               </div>
             ) : (
               <button
-                onClick={toggleNextTheme}
-                title={`Theme: ${themes.find(t => t.id === theme)?.label}. Click to cycle.`}
-                className={cn(
-                  "w-full flex items-center justify-center p-2 rounded-xl transition-all duration-200 hover:bg-white/5"
-                )}
+                onClick={toggleTheme}
+                title={`Theme: ${theme === 'dark' ? 'Dark' : 'Light'}. Click to toggle.`}
+                className="w-full flex items-center justify-center p-2.5 rounded-xl transition-all duration-200 hover:bg-white/5 text-muted-foreground hover:text-foreground"
               >
-                <div className={cn(
-                  "w-4 h-4 rounded-full border border-white/20 shadow-inner",
-                  themes.find(t => t.id === theme)?.colorClass
-                )} />
+                {theme === 'dark' ? (
+                  <Sun className="w-5 h-5 text-amber-400" />
+                ) : (
+                  <Moon className="w-5 h-5 text-indigo-400" />
+                )}
               </button>
             )}
           </div>
