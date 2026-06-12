@@ -165,16 +165,14 @@ try
 
     app.UseMiddleware<GlobalExceptionMiddleware>(); // Must be first!
 
-    if (app.Environment.IsDevelopment())
+    // Enable Swagger in all environments (including production) to support load balancer health checks
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
     {
-        app.UseSwagger();
-        app.UseSwaggerUI(c =>
-        {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "RecruitAI API v1");
-            c.DisplayRequestDuration();
-            c.EnableFilter();
-        });
-    }
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "RecruitAI API v1");
+        c.DisplayRequestDuration();
+        c.EnableFilter();
+    });
 
     app.UseSerilogRequestLogging(opts =>
     {
@@ -200,6 +198,7 @@ try
     app.MapHub<RecruitmentHub>("/hubs/recruitment");
 
     app.MapControllers();
+    app.MapGet("/health", () => Results.Ok(new { status = "Healthy" }));
 
     app.Run();
 }

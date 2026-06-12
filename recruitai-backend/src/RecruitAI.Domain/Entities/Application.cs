@@ -13,6 +13,7 @@ public class Application : BaseEntity
     public Guid JobId { get; private set; }
     public Guid CandidateId { get; private set; }
     public string ResumeS3Key { get; private set; } = default!;
+    public string? ExtractedText { get; private set; }
     public string Status { get; private set; } = ApplicationStatus.Queued;
     public decimal? FitScore { get; private set; }
     public int? Rank { get; private set; }
@@ -33,6 +34,12 @@ public class Application : BaseEntity
         ResumeS3Key = resumeS3Key;
         Status = ApplicationStatus.Queued;
         AddDomainEvent(new ApplicationStatusChangedEvent(Id, Status, CandidateId, JobId));
+    }
+
+    public void SetExtractedText(string extractedText)
+    {
+        ExtractedText = extractedText;
+        MarkUpdated();
     }
 
     public void MarkProcessing()

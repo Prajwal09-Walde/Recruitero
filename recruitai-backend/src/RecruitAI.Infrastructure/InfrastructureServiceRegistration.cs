@@ -68,9 +68,19 @@ public static class InfrastructureServiceRegistration
         // ── Qdrant ────────────────────────────────────────────────────────────────
         services.AddSingleton(sp =>
         {
+            var urlStr = configuration["Qdrant:Url"];
+            var apiKey = configuration["Qdrant:ApiKey"];
+
+            if (!string.IsNullOrEmpty(urlStr) && Uri.TryCreate(urlStr, UriKind.Absolute, out var uri))
+            {
+                var isHttps = uri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase);
+                var port = uri.Port == -1 ? (isHttps ? 443 : 6334) : uri.Port;
+                return new QdrantClient(uri.Host, port, https: isHttps, apiKey: apiKey);
+            }
+
             var host = configuration["Qdrant:Host"] ?? "localhost";
-            var port = int.Parse(configuration["Qdrant:Port"] ?? "6334");
-            return new QdrantClient(host, port);
+            var portVal = int.Parse(configuration["Qdrant:Port"] ?? "6334");
+            return new QdrantClient(host, portVal, https: false, apiKey: apiKey);
         });
 
         // ── MongoDB ───────────────────────────────────────────────────────────────

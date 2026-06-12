@@ -68,6 +68,10 @@ public sealed class ProcessResumeJob(
                 logger.LogInformation("[ProcessResumeJob] Extracted {Chars} chars from PDF", extractedText.Length);
             }
 
+            // Save extracted text to MongoDB
+            application.SetExtractedText(extractedText);
+            await applicationRepository.SaveChangesAsync(ct);
+
             // 4. Run AI pipeline
             var result = await processingService.ProcessAsync(applicationId, extractedText, ct);
 

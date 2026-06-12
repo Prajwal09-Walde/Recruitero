@@ -63,39 +63,52 @@ public sealed class FitScoringService(
                 ?? throw new NotFoundException(nameof(Application), applicationId);
 
             // 2. Fetch job embedding from Qdrant
-            var jobEmbedding = await FetchJobEmbeddingAsync(jobId, ct);
-            if (jobEmbedding is null)
-                throw new InvalidOperationException($"No embedding found for job {jobId}");
+            float[]? jobEmbedding = null;
+            List<ResumeChunkVector> resumeChunks = [];
+            bool qdrantFailed = false;
 
-            // 3. Fetch all resume chunk embeddings via Qdrant scroll
-            var resumeChunks = await ScrollResumeChunksAsync(candidateId, jobId, ct);
-            if (resumeChunks.Count == 0)
+            try
             {
-                logger.LogWarning("[FitScoring] No resume chunks found for candidate {Id}", candidateId);
-                return new FitScoreResult(0m, 999, CreateEmptyRanking(), true);
+                jobEmbedding = await FetchJobEmbeddingAsync(jobId, ct);
+                if (jobEmbedding is not null)
+                {
+                    resumeChunks = await ScrollResumeChunksAsync(candidateId, jobId, ct);
+                }
+            }
+            catch (Exception qex)
+            {
+                logger.LogWarning(qex, "[FitScoring] Qdrant connection failed. Falling back to purely lexical scoring.");
+                qdrantFailed = true;
             }
 
             // 4. Compute cosine similarity for every chunk
-            var scoredChunks = resumeChunks
-                .Select(chunk => new ScoredChunk(
-                    Section: chunk.Section,
-                    Text: chunk.Text,
-                    Similarity: CosineSimilarity(jobEmbedding, chunk.Vector),
-                    Weight: GetSectionWeight(chunk.Section)))
-                .OrderByDescending(c => c.Similarity * c.Weight)
-                .ToList();
+            double rawScore = 0;
+            var scoredChunks = new List<ScoredChunk>();
+            var topChunks = new List<ScoredChunk>();
 
-            // 5. Take top-5 chunks
-            var topChunks = scoredChunks.Take(TopChunksToConsider).ToList();
+            if (!qdrantFailed && resumeChunks.Count > 0 && jobEmbedding is not null)
+            {
+                scoredChunks = resumeChunks
+                    .Select(chunk => new ScoredChunk(
+                        Section: chunk.Section,
+                        Text: chunk.Text,
+                        Similarity: CosineSimilarity(jobEmbedding, chunk.Vector),
+                        Weight: GetSectionWeight(chunk.Section)))
+                    .OrderByDescending(c => c.Similarity * c.Weight)
+                    .ToList();
 
-            // 6. Weighted average score (0–1 scale)
-            double totalWeight = topChunks.Sum(c => c.Weight);
-            double weightedScore = totalWeight > 0
-                ? topChunks.Sum(c => c.Similarity * c.Weight) / totalWeight
-                : 0;
+                // 5. Take top-5 chunks
+                topChunks = scoredChunks.Take(TopChunksToConsider).ToList();
 
-            // 7. Normalize to 0–100 (cosine similarity is 0–1 for normalized embeddings)
-            double rawScore = weightedScore * 100.0;
+                // 6. Weighted average score (0–1 scale)
+                double totalWeight = topChunks.Sum(c => c.Weight);
+                double weightedScore = totalWeight > 0
+                    ? topChunks.Sum(c => c.Similarity * c.Weight) / totalWeight
+                    : 0;
+
+                // 7. Normalize to 0–100 (cosine similarity is 0–1 for normalized embeddings)
+                rawScore = weightedScore * 100.0;
+            }
 
             // 8. Apply boost/penalty from SkillGraph and calculate Lexical match score
             var skillGraph = jobPosting.SkillGraph;
@@ -106,7 +119,9 @@ public sealed class FitScoringService(
 
             if (skillGraph is not null)
             {
-                var fullResumeText = string.Join(" ", scoredChunks.Select(c => c.Text));
+                var fullResumeText = !string.IsNullOrEmpty(application.ExtractedText)
+                    ? application.ExtractedText
+                    : string.Join(" ", topChunks.Select(c => c.Text));
 
                 // Required skills (weight 0.6 of lexical score)
                 double totalRequiredWeight = 0;
@@ -124,11 +139,11 @@ public sealed class FitScoringService(
                     skillMatches.Add(new SkillMatch(
                         Skill: skill.Skill,
                         Matched: matched,
-                        MatchScore: matched ? scoredChunks
+                        MatchScore: matched ? (scoredChunks.Count > 0 ? scoredChunks
                             .Where(c => MatchKeyword(c.Text, skill.Skill))
                             .Select(c => c.Similarity)
                             .DefaultIfEmpty(0.5)
-                            .Max() : 0.0));
+                            .Max() : 1.0) : 0.0));
                 }
 
                 // Nice to have skills (weight 0.3 of lexical score)
@@ -170,8 +185,10 @@ public sealed class FitScoringService(
                 // Blend lexical categories
                 double lexicalScore = (requiredScore * 0.6) + (niceToHaveScore * 0.3) + (domainScore * 0.1);
 
-                // Blend vector (70%) and lexical (30%) scores
-                blendedScore = (rawScore * 0.7) + (lexicalScore * 0.3);
+                // Blend vector (70%) and lexical (30%) scores, or use lexical entirely if Qdrant is down
+                blendedScore = qdrantFailed
+                    ? lexicalScore
+                    : (rawScore * 0.7) + (lexicalScore * 0.3);
 
                 // Apply penalty if no required skills match
                 bool anyRequiredSkillMatched = skillMatches.Any(s => s.Matched);

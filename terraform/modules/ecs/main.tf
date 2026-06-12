@@ -216,7 +216,7 @@ resource "aws_lb_target_group" "target_group" {
   target_type = "ip"
 
   health_check {
-    path                = "/swagger/index.html"
+    path                = "/health"
     port                = "5000"
     protocol            = "HTTP"
     matcher             = "200"

@@ -37,8 +37,17 @@ public sealed class ResumeEmbeddingService(
         string resumeText,
         CancellationToken ct = default)
     {
-        // Step 1: Ensure collection exists
-        await EnsureCollectionExistsAsync(ct);
+        bool qdrantFailed = false;
+        try
+        {
+            // Step 1: Ensure collection exists
+            await EnsureCollectionExistsAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "[ResumeEmbedding] Qdrant not available. Storing vectors skipped.");
+            qdrantFailed = true;
+        }
 
         // Step 2: Chunk the resume
         var chunks = chunker.Chunk(resumeText);
@@ -54,13 +63,26 @@ public sealed class ResumeEmbeddingService(
                 0, []);
         }
 
-        // Step 3: Batch embed all chunks
-        var embeddings = await RetryPolicy.ExecuteAsync(
-            async () => await BatchEmbedAsync(chunks.Select(c => c.Text).ToList(), ct));
+        var pointIds = new List<Guid>();
 
-        // Step 4: Upsert to Qdrant in batches of 100
-        var pointIds = await UpsertChunksAsync(
-            chunks, embeddings, candidateId, applicationId, jobId, ct);
+        if (!qdrantFailed)
+        {
+            try
+            {
+                // Step 3: Batch embed all chunks
+                var embeddings = await RetryPolicy.ExecuteAsync(
+                    async () => await BatchEmbedAsync(chunks.Select(c => c.Text).ToList(), ct));
+
+                // Step 4: Upsert to Qdrant in batches of 100
+                pointIds = await UpsertChunksAsync(
+                    chunks, embeddings, candidateId, applicationId, jobId, ct);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "[ResumeEmbedding] Qdrant upsert failed. Continuing with metadata extraction.");
+                qdrantFailed = true;
+            }
+        }
 
         // Step 5: Extract metadata via GPT-4o
         var metadata = await RetryPolicy.ExecuteAsync(

@@ -50,7 +50,16 @@ public sealed class OpenAIJobSkillExtractor(
         CancellationToken ct = default)
     {
         // Step 1: Ensure Qdrant collection exists
-        await EnsureCollectionExistsAsync(ct);
+        bool qdrantFailed = false;
+        try
+        {
+            await EnsureCollectionExistsAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "[SkillExtractor] Qdrant connection failed. Storing job vector skipped.");
+            qdrantFailed = true;
+        }
 
         // Step 2: Extract SkillGraph via GPT-4o function calling
         var skillGraph = await RetryPolicy.ExecuteAsync(
@@ -60,13 +69,27 @@ public sealed class OpenAIJobSkillExtractor(
             "[SkillExtractor] Extracted graph: {Req} required, {Nice} nice-to-have, seniority={Seniority}",
             skillGraph.RequiredSkills.Count, skillGraph.NiceToHaveSkills.Count, skillGraph.Seniority);
 
-        // Step 3: Generate embedding of job_embedding_text
-        var embedding = await RetryPolicy.ExecuteAsync(
-            async () => await GenerateEmbeddingAsync(skillGraph.JobEmbeddingText, ct));
+        var embedding = Array.Empty<float>();
+        var pointId = Guid.Empty;
 
-        // Step 4: Upsert into Qdrant
-        var pointId = Guid.NewGuid();
-        await UpsertToQdrantAsync(pointId, jobPostingId, embedding, ct);
+        if (!qdrantFailed)
+        {
+            try
+            {
+                // Step 3: Generate embedding of job_embedding_text
+                embedding = await RetryPolicy.ExecuteAsync(
+                    async () => await GenerateEmbeddingAsync(skillGraph.JobEmbeddingText, ct));
+
+                // Step 4: Upsert into Qdrant
+                pointId = Guid.NewGuid();
+                await UpsertToQdrantAsync(pointId, jobPostingId, embedding, ct);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "[SkillExtractor] Qdrant upsert failed. Continuing without vector.");
+                qdrantFailed = true;
+            }
+        }
 
         return new SkillExtractionResult(skillGraph, pointId, embedding);
     }
