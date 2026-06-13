@@ -132,7 +132,7 @@ export default function LoginPage() {
           <div className="flex items-start gap-2.5 bg-violet-500/5 dark:bg-violet-500/5 border border-violet-500/20 dark:border-violet-500/15 rounded-xl p-3">
             <ShieldCheck className="w-4 h-4 text-violet-600 dark:text-violet-400 mt-0.5 shrink-0" />
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Your role (HR Admin, Recruiter, or Viewer) is determined by your registered account.
+
               Don&apos;t have an account?{' '}
               <button
                 type="button"
