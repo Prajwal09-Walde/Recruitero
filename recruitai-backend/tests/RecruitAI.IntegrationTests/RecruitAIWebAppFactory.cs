@@ -32,10 +32,11 @@ public class RecruitAIWebAppFactory : WebApplicationFactory<Program>, IAsyncLife
         // Start the ephemeral MongoDB instance
         _mongoRunner = MongoDbRunner.Start();
 
-        // Force local MongoDB instance and dummy OpenAI key for integration tests
+        // Force local MongoDB instance, dummy OpenAI key, and mock JWT secret for integration tests
         // to prevent connecting to production or Atlas database during startup / Hangfire server initialization.
         Environment.SetEnvironmentVariable("ConnectionStrings__MongoDB", _mongoRunner.ConnectionString);
         Environment.SetEnvironmentVariable("OpenAI__ApiKey", "test-api-key-for-tests");
+        Environment.SetEnvironmentVariable("Jwt__Secret", "REPLACE_WITH_32+_CHAR_SECRET_KEY_HERE!!");
 
         return Task.CompletedTask;
     }

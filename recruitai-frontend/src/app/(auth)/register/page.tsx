@@ -64,7 +64,7 @@ export default function RegisterPage() {
           <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-violet-600 to-fuchsia-600 flex items-center justify-center font-bold text-white text-xl shadow-lg shadow-violet-500/20 mb-2">
             R
           </div>
-          <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-neutral-900 to-neutral-500 dark:from-white dark:to-neutral-400 bg-clip-text text-transparent">
+          <h1 className="text-2xl font-bold tracking-tight text-black dark:text-white">
             Get Started with RecruitAI
           </h1>
           <p className="text-sm text-muted-foreground">

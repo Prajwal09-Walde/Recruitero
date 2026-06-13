@@ -26,7 +26,7 @@ export default function JobsListPage() {
       {/* Header section */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
         <div className="flex flex-col gap-1.5">
-          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-neutral-900 to-neutral-500 dark:from-white dark:to-neutral-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-extrabold tracking-tight text-black dark:text-white">
             {isHrAdmin || user?.role === 'Recruiter' ? 'Jobs Dashboard' : 'Job Openings'}
           </h1>
           <p className="text-sm text-muted-foreground">

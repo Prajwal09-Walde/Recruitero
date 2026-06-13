@@ -89,12 +89,20 @@ public class MongoDbContext
             };
         }
 
+        // Optimize database connection latency and pool reuse
+        settings.ServerSelectionTimeout = TimeSpan.FromSeconds(5);
+        settings.ConnectTimeout = TimeSpan.FromSeconds(5);
+        settings.MaxConnectionIdleTime = TimeSpan.FromMinutes(25); // Atlas closed connection prevention
+        settings.MinConnectionPoolSize = 5;                        // Warm connections ready
+        settings.MaxConnectionPoolSize = 100;
+
         var client = new MongoClient(settings);
         
         var databaseName = mongoUrl.DatabaseName ?? "recruitai";
         _database = client.GetDatabase(databaseName);
 
-        CreateIndexes();
+        // Run index creation in the background to prevent blocking application startup and initial requests
+        Task.Run(CreateIndexes);
     }
 
     private void CreateIndexes()

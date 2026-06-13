@@ -1,0 +1,19 @@
+[Unit]
+Description=RecruitAI ASP.NET Core API Service
+After=network.target
+
+[Service]
+WorkingDirectory=/var/www/recruitai
+ExecStart=/usr/bin/dotnet /var/www/recruitai/RecruitAI.API.dll
+Restart=always
+# Restart service after 10 seconds if dotnet service crashes
+RestartSec=10
+KillSignal=SIGINT
+SyslogIdentifier=recruitai-api
+User=www-data
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://localhost:5000
+EnvironmentFile=/var/www/recruitai/.env
+
+[Install]
+WantedBy=multi-user.target
