@@ -115,7 +115,7 @@ try
     {
         c.SwaggerDoc("v1", new OpenApiInfo
         {
-            Title   = "RecruitAI API",
+            Title   = "Recruitero API",
             Version = "v1",
             Description = "AI-powered Recruitment Intelligence Platform"
         });
@@ -169,7 +169,7 @@ try
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "RecruitAI API v1");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Recruitero API v1");
         c.DisplayRequestDuration();
         c.EnableFilter();
     });
@@ -204,7 +204,7 @@ try
 }
 catch (Exception ex)
 {
-    Log.Fatal(ex, "RecruitAI host terminated unexpectedly");
+    Log.Fatal(ex, "Recruitero host terminated unexpectedly");
 }
 finally
 {

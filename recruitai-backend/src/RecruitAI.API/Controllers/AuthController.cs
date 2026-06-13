@@ -206,8 +206,8 @@ public sealed class AuthController(IConfiguration configuration, IUserService us
         };
 
         var token = new JwtSecurityToken(
-            issuer:             configuration["Jwt:Issuer"]   ?? "RecruitAI",
-            audience:           configuration["Jwt:Audience"] ?? "RecruitAI.Clients",
+            issuer:             configuration["Jwt:Issuer"]   ?? "Recruitero",
+            audience:           configuration["Jwt:Audience"] ?? "Recruitero.Clients",
             claims:             claims,
             expires:            DateTime.UtcNow.AddMinutes(AccessTokenMinutes),
             signingCredentials: creds

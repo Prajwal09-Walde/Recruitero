@@ -73,7 +73,7 @@ export default function LoginPage() {
             R
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-black dark:text-white">
-            RecruitAI Intelligence
+            Recruitero Intelligence
           </h1>
           <p className="text-sm text-muted-foreground">
             Sign in with your registered email and password

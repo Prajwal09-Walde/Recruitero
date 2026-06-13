@@ -9,8 +9,8 @@ namespace RecruitAI.IntegrationTests;
 public static class TestJwtGenerator
 {
     private const string Secret   = "REPLACE_WITH_32+_CHAR_SECRET_KEY_HERE!!";
-    private const string Issuer   = "RecruitAI";
-    private const string Audience = "RecruitAI.Clients";
+    private const string Issuer   = "Recruitero";
+    private const string Audience = "Recruitero.Clients";
 
     public static string Generate(string role, string userId = "test-user-id")
     {

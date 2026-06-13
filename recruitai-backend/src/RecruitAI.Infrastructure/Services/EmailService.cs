@@ -33,8 +33,8 @@ public sealed class EmailService(IConfiguration configuration, ILogger<EmailServ
         var port = int.Parse(portStr);
         var password = configuration["Smtp:Password"] ?? "";
         var enableSsl = bool.Parse(configuration["Smtp:EnableSsl"] ?? "true");
-        var fromAddress = configuration["Smtp:FromAddress"] ?? "no-reply@recruitai.io";
-        var fromName = configuration["Smtp:FromName"] ?? "RecruitAI";
+        var fromAddress = configuration["Smtp:FromAddress"] ?? "no-reply@recruitero.io";
+        var fromName = configuration["Smtp:FromName"] ?? "Recruitero";
 
         try
         {

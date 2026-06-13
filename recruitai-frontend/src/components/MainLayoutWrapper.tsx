@@ -74,7 +74,7 @@ export function MainLayoutWrapper({ children }: { children: React.ReactNode }) {
             </div>
             {sidebarOpen && (
               <span className="font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
-                RecruitAI
+                Recruitero
               </span>
             )}
           </div>

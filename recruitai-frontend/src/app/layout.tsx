@@ -6,7 +6,7 @@ import { MainLayoutWrapper } from '@/components/MainLayoutWrapper';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'RecruitAI — AI Recruitment Intelligence Platform',
+  title: 'Recruitero — AI Recruitment Intelligence Platform',
   description: 'AI-powered candidate ranking and pipeline management.',
 };
 

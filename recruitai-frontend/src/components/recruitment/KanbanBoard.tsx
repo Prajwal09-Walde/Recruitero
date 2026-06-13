@@ -77,10 +77,7 @@ export function KanbanBoard({ candidates, onStatusChange, userRole }: KanbanBoar
           </p>
         </div>
 
-        <div className={cn(
-          "flex md:grid gap-3.5 mt-2 select-none overflow-x-auto pb-2 custom-scrollbar",
-          columns.length === 3 ? "md:grid-cols-3" : "md:grid-cols-6"
-        )}>
+        <div className="flex gap-4 mt-2 select-none overflow-x-auto pb-3 custom-scrollbar">
           {columns.map((col) => {
             const colCandidates = candidates.filter((c) => c.status === col.id);
             return (
@@ -113,7 +110,7 @@ function KanbanColumn({ id, title, candidates, colorClass }: KanbanColumnProps) 
     <div
       ref={setNodeRef}
       className={cn(
-        "flex flex-col gap-3 p-3 rounded-xl border min-h-[320px] transition-all shrink-0 w-[280px] md:w-auto",
+        "flex flex-col gap-3 p-3.5 rounded-xl border min-h-[380px] transition-all shrink-0 w-[260px] md:w-[280px]",
         colorClass.split(' ')[0],
         colorClass.split(' ')[1],
         isOver && "border-primary bg-primary/5 ring-1 ring-primary/25"
