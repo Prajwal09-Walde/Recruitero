@@ -1,0 +1,13 @@
+**/*.git
+**/*.vscode
+**/bin
+**/obj
+**/node_modules
+**/uploads
+**/logs
+**/.next
+**/out
+**/publish
+.env
+*.log
+*.msi
