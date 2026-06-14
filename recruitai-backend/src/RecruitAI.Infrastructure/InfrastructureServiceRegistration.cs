@@ -1,4 +1,4 @@
-using Amazon.S3;
+
 using Azure;
 using Azure.AI.OpenAI;
 using Hangfire;
@@ -45,9 +45,8 @@ public static class InfrastructureServiceRegistration
         services.AddScoped<IWebhookConfigurationRepository, WebhookConfigurationRepository>();
         services.AddScoped<IWebhookDeliveryRepository, WebhookDeliveryRepository>();
 
-        // ── AWS S3 ────────────────────────────────────────────────────────────────
-        services.AddAWSService<IAmazonS3>();
-        services.AddScoped<IStorageService, S3StorageService>();
+        // ── Local File Storage ────────────────────────────────────────────────────
+        services.AddScoped<IStorageService, LocalStorageService>();
 
         // ── OpenAI (Azure SDK) ────────────────────────────────────────────────────
         services.AddSingleton(sp =>
