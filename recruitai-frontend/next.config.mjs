@@ -27,6 +27,19 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'https://recruitai.io';
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${backendUrl}/api/:path*`,
+      },
+      {
+        source: '/hubs/:path*',
+        destination: `${backendUrl}/hubs/:path*`,
+      },
+    ];
+  },
 };
 
 export default withBundleAnalyzer(nextConfig);

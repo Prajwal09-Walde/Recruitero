@@ -3,16 +3,6 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "cleanUrls": true,
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "https://recruitai.io/api/:path*"
-    },
-    {
-      "source": "/hubs/:path*",
-      "destination": "https://recruitai.io/hubs/:path*"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
