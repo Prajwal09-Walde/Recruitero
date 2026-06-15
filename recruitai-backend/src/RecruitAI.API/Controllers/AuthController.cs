@@ -26,33 +26,47 @@ public sealed class AuthController(IConfiguration configuration, IUserService us
     [AllowAnonymous]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken ct)
     {
-        if (string.IsNullOrWhiteSpace(request.Email) ||
-            string.IsNullOrWhiteSpace(request.FullName) ||
-            string.IsNullOrWhiteSpace(request.Password) ||
-            string.IsNullOrWhiteSpace(request.Role))
+        try
         {
-            return BadRequest(Error400("FullName, Email, Password, and Role are required."));
-        }
-
-        var validRoles = new[] { "HRAdmin", "TeamLead", "Viewer" };
-        if (!validRoles.Contains(request.Role))
-            return BadRequest(Error400("Role must be one of: HRAdmin, TeamLead, Viewer."));
-
-        if (request.Password.Length < 6)
-            return BadRequest(Error400("Password must be at least 6 characters."));
-
-        var user = await userService.RegisterAsync(request.FullName, request.Email, request.Password, request.Role, ct);
-        if (user is null)
-        {
-            return Conflict(new ProblemDetails
+            if (string.IsNullOrWhiteSpace(request.Email) ||
+                string.IsNullOrWhiteSpace(request.FullName) ||
+                string.IsNullOrWhiteSpace(request.Password) ||
+                string.IsNullOrWhiteSpace(request.Role))
             {
-                Status = 409,
-                Title  = "Email already registered",
-                Detail = "An account with that email address already exists. Please sign in instead."
+                return BadRequest(Error400("FullName, Email, Password, and Role are required."));
+            }
+
+            var validRoles = new[] { "HRAdmin", "TeamLead", "Viewer" };
+            if (!validRoles.Contains(request.Role))
+                return BadRequest(Error400("Role must be one of: HRAdmin, TeamLead, Viewer."));
+
+            if (request.Password.Length < 6)
+                return BadRequest(Error400("Password must be at least 6 characters."));
+
+            var user = await userService.RegisterAsync(request.FullName, request.Email, request.Password, request.Role, ct);
+            if (user is null)
+            {
+                return Conflict(new ProblemDetails
+                {
+                    Status = 409,
+                    Title  = "Email already registered",
+                    Detail = "An account with that email address already exists. Please sign in instead."
+                });
+            }
+
+            return Ok(await IssueTokens(user, ct));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new 
+            { 
+                error = ex.Message, 
+                stackTrace = ex.StackTrace, 
+                innerException = ex.InnerException?.Message,
+                mongoDbUriLength = Environment.GetEnvironmentVariable("MONGODB_URI")?.Length ?? 0,
+                connStrMongoDBLength = Environment.GetEnvironmentVariable("ConnectionStrings__MongoDB")?.Length ?? 0
             });
         }
-
-        return Ok(await IssueTokens(user, ct));
     }
 
     // ── Login ─────────────────────────────────────────────────────────────────────
