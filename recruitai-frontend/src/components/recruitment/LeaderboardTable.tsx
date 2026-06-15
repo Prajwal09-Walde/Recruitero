@@ -16,7 +16,7 @@ interface LeaderboardTableProps {
   statusFilter: string;
   onStatusFilterChange: (status: string) => void;
   userRole?: string;
-  onSendToRecruiter?: (applicationId: string) => void;
+  onSendToTeamLead?: (applicationId: string) => void;
 }
 
 type SortField = 'name' | 'fitScore';
@@ -33,7 +33,7 @@ export function LeaderboardTable({
   statusFilter,
   onStatusFilterChange,
   userRole,
-  onSendToRecruiter,
+  onSendToTeamLead,
 }: LeaderboardTableProps) {
   const [sortField, setSortField] = useState<SortField>('fitScore');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
@@ -211,18 +211,18 @@ export function LeaderboardTable({
                           cand.status === 'Queued' && 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20'
                         )}
                       >
-                        {cand.status === 'SentToRecruiter' ? 'Sent to Recruiter' : cand.status}
+                        {cand.status === 'SentToRecruiter' ? 'Sent to Team Lead' : cand.status}
                       </span>
                     </td>
                     <td className="py-4 px-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        {userRole === 'HRAdmin' && cand.status === 'Scored' && onSendToRecruiter && (
+                        {userRole === 'HRAdmin' && cand.status === 'Scored' && onSendToTeamLead && (
                           <button
                             type="button"
-                            onClick={() => onSendToRecruiter(cand.applicationId)}
+                            onClick={() => onSendToTeamLead(cand.applicationId)}
                             className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-blue-500/20 bg-blue-500/5 hover:bg-blue-600 text-blue-600 dark:text-blue-300 hover:text-white transition-all shadow-sm"
                           >
-                            Send to Recruiter
+                            Send to Team Lead
                           </button>
                         )}
                         {['Scored', 'SentToRecruiter', 'Shortlisted', 'Rejected'].includes(cand.status) ? (

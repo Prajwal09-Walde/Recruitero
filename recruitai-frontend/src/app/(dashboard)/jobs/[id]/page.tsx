@@ -25,7 +25,7 @@ export default function JobDetailPage() {
   // User role details
   const { user } = useAuthStore();
   const isViewer = user?.role === 'Viewer';
-  const isRecruiter = user?.role === 'Recruiter';
+  const isTeamLead = user?.role === 'TeamLead';
   const isHrAdmin = user?.role === 'HRAdmin';
 
   // Apply state (for Viewer)
@@ -139,10 +139,10 @@ export default function JobDetailPage() {
     updateStatusMutation.mutate({ applicationId, status: nextStatus });
   };
 
-  const handleSendToRecruiter = (applicationId: string) => {
+  const handleSendToTeamLead = (applicationId: string) => {
     updateStatusMutation.mutate({ applicationId, status: 'SentToRecruiter' });
-    toast('Sent to Recruiter', {
-      description: 'Candidate has been sent to the recruiter successfully.',
+    toast('Sent to Team Lead', {
+      description: 'Candidate has been sent to the Team Lead successfully.',
       type: 'success',
     });
   };
@@ -319,7 +319,7 @@ export default function JobDetailPage() {
                         </div>
                       </div>
 
-                      {/* Step 3: Recruiter Review */}
+                      {/* Step 3: Team Lead Review */}
                       <div className="flex gap-3">
                         <div className="flex flex-col items-center">
                           <div className={cn(
@@ -338,9 +338,9 @@ export default function JobDetailPage() {
                           )} />
                         </div>
                         <div>
-                          <h4 className="text-xs font-bold text-foreground">Recruiter Review</h4>
+                          <h4 className="text-xs font-bold text-foreground">Team Lead Review</h4>
                           <p className="text-[11px] text-muted-foreground">
-                            {['SentToRecruiter'].includes(userApplication.status) && 'Sent to Recruiter. Under review...'}
+                            {['SentToRecruiter'].includes(userApplication.status) && 'Sent to Team Lead. Under review...'}
                             {['Shortlisted', 'Rejected'].includes(userApplication.status) && 'Review complete.'}
                             {!['SentToRecruiter', 'Shortlisted', 'Rejected'].includes(userApplication.status) && 'Awaiting review dispatch.'}
                           </p>
@@ -457,7 +457,7 @@ export default function JobDetailPage() {
           </div>
         </div>
       ) : (
-        /* ── ADMIN/RECRUITER DASHBOARD CONTENT ── */
+        /* ── ADMIN/TEAM LEAD DASHBOARD CONTENT ── */
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-6 items-start">
           {/* Left: Leaderboard (60% equivalent) */}
           <div className="lg:col-span-6 w-full">
@@ -475,7 +475,7 @@ export default function JobDetailPage() {
                 setPage(1); // Reset page on filter change
               }}
               userRole={user?.role}
-              onSendToRecruiter={handleSendToRecruiter}
+              onSendToTeamLead={handleSendToTeamLead}
             />
           </div>
 

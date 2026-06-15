@@ -43,7 +43,7 @@ export function MainLayoutWrapper({ children }: { children: React.ReactNode }) {
     navItems.push({ label: 'Jobs Dashboard', icon: Briefcase, href: '/jobs' });
     navItems.push({ label: 'Create Job', icon: PlusCircle, href: '/jobs/new' });
     navItems.push({ label: 'Analytics', icon: BarChart3, href: '/analytics' });
-  } else if (user?.role === 'Recruiter') {
+  } else if (user?.role === 'TeamLead') {
     navItems.push({ label: 'Jobs Dashboard', icon: Briefcase, href: '/jobs' });
     navItems.push({ label: 'Analytics', icon: BarChart3, href: '/analytics' });
   } else if (user?.role === 'Viewer') {

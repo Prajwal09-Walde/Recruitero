@@ -34,7 +34,7 @@ public sealed class JobsController(
     /// Accepts up to 20 PDF files (max 5MB each) via multipart/form-data.
     /// </summary>
     [HttpPost("{jobId:guid}/applications/bulk-upload")]
-    [Authorize(Roles = $"{Roles.HrAdmin},{Roles.Recruiter},{Roles.Viewer}")]
+    [Authorize(Roles = $"{Roles.HrAdmin},{Roles.TeamLead},{Roles.Viewer}")]
     [RequestSizeLimit(110 * 1024 * 1024)] // 20 files × 5.5MB buffer
     [DisableRequestSizeLimit]
     [ProducesResponseType(typeof(BulkUploadResumesResult), StatusCodes.Status202Accepted)]
@@ -62,7 +62,7 @@ public sealed class JobsController(
     /// Restricted to HRAdmin and Recruiter.
     /// </summary>
     [HttpGet("analytics")]
-    [Authorize(Roles = $"{Roles.HrAdmin},{Roles.Recruiter}")]
+    [Authorize(Roles = $"{Roles.HrAdmin},{Roles.TeamLead}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAnalytics(CancellationToken cancellationToken)
     {
@@ -154,7 +154,7 @@ public sealed class JobsController(
     /// Cached for 30 seconds server-side.
     /// </summary>
     [HttpGet("{jobId:guid}/leaderboard")]
-    [Authorize(Roles = $"{Roles.HrAdmin},{Roles.Recruiter},{Roles.Viewer}")]
+    [Authorize(Roles = $"{Roles.HrAdmin},{Roles.TeamLead},{Roles.Viewer}")]
     [ProducesResponseType(typeof(Application.Features.Jobs.Queries.LeaderboardResult), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetLeaderboard(
@@ -194,7 +194,7 @@ public sealed class JobsController(
     /// Returns all active job openings.
     /// </summary>
     [HttpGet]
-    [Authorize(Roles = $"{Roles.HrAdmin},{Roles.Recruiter},{Roles.Viewer}")]
+    [Authorize(Roles = $"{Roles.HrAdmin},{Roles.TeamLead},{Roles.Viewer}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetJobs(CancellationToken cancellationToken)
     {
@@ -252,7 +252,7 @@ public sealed class JobsController(
     /// Gets job details including the AI-extracted SkillGraph if ready.
     /// </summary>
     [HttpGet("{jobId:guid}")]
-    [Authorize(Roles = $"{Roles.HrAdmin},{Roles.Recruiter},{Roles.Viewer}")]
+    [Authorize(Roles = $"{Roles.HrAdmin},{Roles.TeamLead},{Roles.Viewer}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetJob(

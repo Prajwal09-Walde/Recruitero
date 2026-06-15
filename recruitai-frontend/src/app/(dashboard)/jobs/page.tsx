@@ -27,10 +27,10 @@ export default function JobsListPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
         <div className="flex flex-col gap-1.5">
           <h1 className="text-3xl font-extrabold tracking-tight text-black dark:text-white">
-            {isHrAdmin || user?.role === 'Recruiter' ? 'Jobs Dashboard' : 'Job Openings'}
+            {isHrAdmin || user?.role === 'TeamLead' ? 'Jobs Dashboard' : 'Job Openings'}
           </h1>
           <p className="text-sm text-muted-foreground">
-            {isHrAdmin || user?.role === 'Recruiter' 
+            {isHrAdmin || user?.role === 'TeamLead' 
               ? 'Manage job postings, review resume match scoring, and coordinate interviews.'
               : 'Explore our open career opportunities and submit your application.'}
           </p>
@@ -133,7 +133,7 @@ export default function JobsListPage() {
 
                   <div className="flex items-center justify-between z-10 pt-2 border-t border-border/40">
                     <span className="text-xs text-violet-600 dark:text-violet-400 group-hover:text-violet-700 dark:group-hover:text-violet-300 font-semibold flex items-center gap-1">
-                      {isHrAdmin || user?.role === 'Recruiter' ? 'View Pipeline' : 'View Details & Apply'}
+                      {isHrAdmin || user?.role === 'TeamLead' ? 'View Pipeline' : 'View Details & Apply'}
                       <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
                     </span>
                   </div>

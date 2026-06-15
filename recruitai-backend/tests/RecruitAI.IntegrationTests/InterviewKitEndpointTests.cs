@@ -69,10 +69,10 @@ public class InterviewKitEndpointTests(RecruitAIWebAppFactory factory)
     }
 
     [Fact]
-    public async Task RegenerateInterviewKit_WithRecruiterRole_Returns202()
+    public async Task RegenerateInterviewKit_WithTeamLeadRole_Returns202()
     {
-        // Both HrAdmin and Recruiter can regenerate
-        SetBearerToken("Recruiter");
+        // Both HrAdmin and TeamLead can regenerate
+        SetBearerToken("TeamLead");
         var appId = RecruitAIWebAppFactory.TestApplicationId;
 
         var response = await _client.PostAsync(

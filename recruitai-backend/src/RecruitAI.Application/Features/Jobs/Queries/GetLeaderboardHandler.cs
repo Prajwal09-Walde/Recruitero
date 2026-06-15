@@ -74,7 +74,7 @@ public sealed class GetLeaderboardHandler(
                 }
             }
         }
-        else if (request.UserRole == Roles.Recruiter)
+        else if (request.UserRole == Roles.TeamLead)
         {
             if (!string.IsNullOrWhiteSpace(statusFilter) &&
                 statusFilter != ApplicationStatus.SentToRecruiter &&

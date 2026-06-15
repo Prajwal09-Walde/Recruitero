@@ -15,7 +15,7 @@ namespace RecruitAI.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/applications")]
-[Authorize(Roles = $"{Roles.HrAdmin},{Roles.Recruiter}")]
+[Authorize(Roles = $"{Roles.HrAdmin},{Roles.TeamLead}")]
 [Produces("application/json")]
 public sealed class ApplicationsController(
     IMediator mediator,
@@ -59,7 +59,7 @@ public sealed class ApplicationsController(
     /// Enqueues a Hangfire background job and returns 202 Accepted.
     /// </summary>
     [HttpPost("{applicationId:guid}/interview-kit/regenerate")]
-    [Authorize(Roles = $"{Roles.HrAdmin},{Roles.Recruiter}")]
+    [Authorize(Roles = $"{Roles.HrAdmin},{Roles.TeamLead}")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RegenerateInterviewKit(
@@ -96,19 +96,19 @@ public sealed class ApplicationsController(
         if (application is null)
             return NotFound();
 
-        if (role == Roles.Recruiter)
+        if (role == Roles.TeamLead)
         {
-            // Recruiter can only move to Shortlisted or Rejected, and current status must be SentToRecruiter, Shortlisted, or Rejected
+            // Team Lead can only move to Shortlisted or Rejected, and current status must be SentToRecruiter, Shortlisted, or Rejected
             if (request.Status != ApplicationStatus.Shortlisted && request.Status != ApplicationStatus.Rejected)
             {
-                return BadRequest("Recruiter can only shortlist or reject candidates.");
+                return BadRequest("Team Lead can only shortlist or reject candidates.");
             }
 
             if (application.Status != ApplicationStatus.SentToRecruiter &&
                 application.Status != ApplicationStatus.Shortlisted &&
                 application.Status != ApplicationStatus.Rejected)
             {
-                return BadRequest("Candidate has not been sent to the recruiter yet.");
+                return BadRequest("Candidate has not been sent to the Team Lead yet.");
             }
         }
 

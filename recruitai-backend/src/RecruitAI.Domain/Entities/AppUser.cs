@@ -3,7 +3,7 @@ using RecruitAI.Domain.Common;
 namespace RecruitAI.Domain.Entities;
 
 /// <summary>
-/// Represents a registered platform user (HRAdmin, Recruiter, or Viewer).
+/// Represents a registered platform user (HRAdmin, TeamLead, or Viewer).
 /// Passwords are stored as BCrypt hashes — never plain text.
 /// </summary>
 public class AppUser : BaseEntity
@@ -12,7 +12,7 @@ public class AppUser : BaseEntity
     public string Email    { get; private set; } = string.Empty;
     /// <summary>BCrypt hash of the user's password.</summary>
     public string PasswordHash { get; private set; } = string.Empty;
-    /// <summary>One of: HRAdmin | Recruiter | Viewer</summary>
+    /// <summary>One of: HRAdmin | TeamLead | Viewer</summary>
     public string Role     { get; private set; } = string.Empty;
     public DateTime? LastLoginAt { get; private set; }
     /// <summary>Opaque refresh token stored in MongoDB for server-side validation.</summary>

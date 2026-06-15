@@ -1,4 +1,4 @@
-export type Role = 'HRAdmin' | 'Recruiter' | 'Viewer';
+export type Role = 'HRAdmin' | 'TeamLead' | 'Viewer';
 
 export interface User {
   email: string;

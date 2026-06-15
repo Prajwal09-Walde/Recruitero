@@ -34,9 +34,9 @@ public sealed class AuthController(IConfiguration configuration, IUserService us
             return BadRequest(Error400("FullName, Email, Password, and Role are required."));
         }
 
-        var validRoles = new[] { "HRAdmin", "Recruiter", "Viewer" };
+        var validRoles = new[] { "HRAdmin", "TeamLead", "Viewer" };
         if (!validRoles.Contains(request.Role))
-            return BadRequest(Error400("Role must be one of: HRAdmin, Recruiter, Viewer."));
+            return BadRequest(Error400("Role must be one of: HRAdmin, TeamLead, Viewer."));
 
         if (request.Password.Length < 6)
             return BadRequest(Error400("Password must be at least 6 characters."));

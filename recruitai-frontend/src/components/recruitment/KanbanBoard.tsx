@@ -16,7 +16,7 @@ const COLUMNS = [
   { id: 'Queued', title: 'Queued', color: 'border-slate-500/20 bg-slate-500/5 text-slate-400' },
   { id: 'Processing', title: 'Processing', color: 'border-violet-500/20 bg-violet-500/5 text-violet-400' },
   { id: 'Scored', title: 'Scored', color: 'border-blue-500/20 bg-blue-500/5 text-blue-400' },
-  { id: 'SentToRecruiter', title: 'Sent to Recruiter', color: 'border-cyan-500/20 bg-cyan-500/5 text-cyan-400' },
+  { id: 'SentToRecruiter', title: 'Sent to Team Lead', color: 'border-cyan-500/20 bg-cyan-500/5 text-cyan-400' },
   { id: 'Shortlisted', title: 'Shortlisted', color: 'border-emerald-500/20 bg-emerald-500/5 text-emerald-400' },
   { id: 'Rejected', title: 'Rejected', color: 'border-rose-500/20 bg-rose-500/5 text-rose-400' },
 ];
@@ -32,13 +32,13 @@ export function KanbanBoard({ candidates, onStatusChange, userRole }: KanbanBoar
 
     if (!candidate) return;
 
-    const isRecruiterRole = userRole === 'Recruiter';
+    const isTeamLeadRole = userRole === 'TeamLead';
     
-    if (isRecruiterRole) {
-      const allowedRecruiterStatuses = ['SentToRecruiter', 'Shortlisted', 'Rejected'];
+    if (isTeamLeadRole) {
+      const allowedTeamLeadStatuses = ['SentToRecruiter', 'Shortlisted', 'Rejected'];
       if (
-        allowedRecruiterStatuses.includes(candidate.status) &&
-        allowedRecruiterStatuses.includes(targetStatus) &&
+        allowedTeamLeadStatuses.includes(candidate.status) &&
+        allowedTeamLeadStatuses.includes(targetStatus) &&
         candidate.status !== targetStatus
       ) {
         onStatusChange(applicationId, targetStatus);
@@ -57,7 +57,7 @@ export function KanbanBoard({ candidates, onStatusChange, userRole }: KanbanBoar
   };
 
   const columns = COLUMNS.filter(col => {
-    if (userRole === 'Recruiter') {
+    if (userRole === 'TeamLead') {
       return ['SentToRecruiter', 'Shortlisted', 'Rejected'].includes(col.id);
     }
     return true; // HRAdmin sees all columns
@@ -71,9 +71,9 @@ export function KanbanBoard({ candidates, onStatusChange, userRole }: KanbanBoar
             Candidate Pipeline
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {userRole === 'Recruiter' 
-              ? 'Drag Sent to Recruiter candidates to Shortlisted or Rejected columns.'
-              : 'Drag Scored candidates to Sent to Recruiter, Shortlisted, or Rejected columns.'}
+            {userRole === 'TeamLead' 
+              ? 'Drag Sent to Team Lead candidates to Shortlisted or Rejected columns.'
+              : 'Drag Scored candidates to Sent to Team Lead, Shortlisted, or Rejected columns.'}
           </p>
         </div>
 

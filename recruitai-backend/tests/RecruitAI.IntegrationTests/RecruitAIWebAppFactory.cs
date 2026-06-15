@@ -37,6 +37,8 @@ public class RecruitAIWebAppFactory : WebApplicationFactory<Program>, IAsyncLife
         Environment.SetEnvironmentVariable("ConnectionStrings__MongoDB", _mongoRunner.ConnectionString);
         Environment.SetEnvironmentVariable("OpenAI__ApiKey", "test-api-key-for-tests");
         Environment.SetEnvironmentVariable("Jwt__Secret", "REPLACE_WITH_32+_CHAR_SECRET_KEY_HERE!!");
+        Environment.SetEnvironmentVariable("Jwt__Issuer", "Recruitero");
+        Environment.SetEnvironmentVariable("Jwt__Audience", "Recruitero.Clients");
 
         return Task.CompletedTask;
     }

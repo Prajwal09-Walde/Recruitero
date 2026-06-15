@@ -12,7 +12,7 @@ export default function RegisterPage() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'HRAdmin' | 'Recruiter' | 'Viewer'>('Viewer');
+  const [role, setRole] = useState<'HRAdmin' | 'TeamLead' | 'Viewer'>('Viewer');
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const login = useAuthStore((s) => s.login);
@@ -147,7 +147,7 @@ export default function RegisterPage() {
                 Your Platform Role
               </label>
               <div className="grid grid-cols-2 gap-3">
-                {(['HRAdmin', 'Recruiter'] as const).map((r) => (
+                {(['HRAdmin', 'TeamLead'] as const).map((r) => (
                   <button
                     key={r}
                     type="button"
@@ -158,7 +158,7 @@ export default function RegisterPage() {
                         : 'border-border dark:border-white/5 bg-background dark:bg-white/5 hover:bg-muted dark:hover:bg-white/10 text-foreground'
                     }`}
                   >
-                    {r === 'HRAdmin' ? 'HR Admin' : 'Recruiter'}
+                    {r === 'HRAdmin' ? 'HR Admin' : 'Team Lead'}
                   </button>
                 ))}
               </div>

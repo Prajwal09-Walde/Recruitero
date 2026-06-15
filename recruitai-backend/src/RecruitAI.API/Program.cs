@@ -102,8 +102,8 @@ try
     builder.Services.AddAuthorization(opts =>
     {
         opts.AddPolicy("HrAdminOnly",  p => p.RequireRole("HRAdmin"));
-        opts.AddPolicy("RecruiterUp",  p => p.RequireRole("HRAdmin", "Recruiter"));
-        opts.AddPolicy("ViewerUp",     p => p.RequireRole("HRAdmin", "Recruiter", "Viewer"));
+        opts.AddPolicy("TeamLeadUp",  p => p.RequireRole("HRAdmin", "TeamLead"));
+        opts.AddPolicy("ViewerUp",     p => p.RequireRole("HRAdmin", "TeamLead", "Viewer"));
     });
 
     // ── Controllers ───────────────────────────────────────────────────────────────

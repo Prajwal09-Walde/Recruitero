@@ -110,7 +110,7 @@ export default function AnalyticsPage() {
   const funnelStages = [
     { label: 'Ingested', count: data.totalApplications, color: 'from-blue-600 to-indigo-600', darkColor: 'from-blue-500 to-indigo-500' },
     { label: 'AI Scored', count: data.totalApplications - (data.funnel['Queued'] || 0) - (data.funnel['Processing'] || 0) - (data.funnel['Failed'] || 0), color: 'from-indigo-600 to-violet-600', darkColor: 'from-indigo-500 to-violet-500' },
-    { label: 'Recruiter Review', count: (data.funnel['SentToRecruiter'] || 0) + (data.funnel['Shortlisted'] || 0) + (data.funnel['Rejected'] || 0), color: 'from-violet-600 to-fuchsia-600', darkColor: 'from-violet-500 to-fuchsia-500' },
+    { label: 'Team Lead Review', count: (data.funnel['SentToRecruiter'] || 0) + (data.funnel['Shortlisted'] || 0) + (data.funnel['Rejected'] || 0), color: 'from-violet-600 to-fuchsia-600', darkColor: 'from-violet-500 to-fuchsia-500' },
     { label: 'Shortlisted', count: data.funnel['Shortlisted'] || 0, color: 'from-emerald-600 to-teal-600', darkColor: 'from-emerald-500 to-teal-500' }
   ];
 

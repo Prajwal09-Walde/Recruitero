@@ -4,7 +4,7 @@ namespace RecruitAI.Shared.Constants;
 public static class Roles
 {
     public const string HrAdmin  = "HRAdmin";
-    public const string Recruiter = "Recruiter";
+    public const string TeamLead = "TeamLead";
     public const string Viewer    = "Viewer";
 }
 
