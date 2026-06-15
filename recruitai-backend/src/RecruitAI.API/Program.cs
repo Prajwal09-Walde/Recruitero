@@ -21,6 +21,7 @@ Log.Logger = new LoggerConfiguration()
 
 // ── Load .env file ──
 LoadDotEnv();
+MapEnvironmentVariables();
 
 // ── Free port if already in use ──
 FreePortIfBusy();
@@ -462,6 +463,25 @@ finally
         catch (Exception ex)
         {
             Log.Warning(ex, "Failed to kill process on port {Port}", port);
+        }
+    }
+
+    static void MapEnvironmentVariables()
+    {
+        MapKey("JWT_SECRET", "Jwt__Secret");
+        MapKey("MONGODB_URI", "ConnectionStrings__MongoDB");
+        MapKey("OPENAI_API_KEY", "OpenAI__ApiKey");
+        MapKey("OPENAI_ENDPOINT", "OpenAI__Endpoint");
+        MapKey("QDRANT_URL", "Qdrant__Url");
+        MapKey("QDRANT_API_KEY", "Qdrant__ApiKey");
+    }
+
+    static void MapKey(string rawKey, string aspNetKey)
+    {
+        var val = Environment.GetEnvironmentVariable(rawKey);
+        if (!string.IsNullOrEmpty(val) && string.IsNullOrEmpty(Environment.GetEnvironmentVariable(aspNetKey)))
+        {
+            Environment.SetEnvironmentVariable(aspNetKey, val);
         }
     }
 

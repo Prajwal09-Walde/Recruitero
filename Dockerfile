@@ -26,8 +26,8 @@ WORKDIR /app
 COPY --from=build /publish .
 
 # Expose port (Render automatically maps internal port to public URL)
-ENV ASPNETCORE_URLS=http://+:10000
-EXPOSE 10000
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
 
 # Set entry point
 ENTRYPOINT ["dotnet", "RecruitAI.API.dll"]
