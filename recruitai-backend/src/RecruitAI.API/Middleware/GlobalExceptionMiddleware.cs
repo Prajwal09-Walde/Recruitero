@@ -68,8 +68,12 @@ public sealed class GlobalExceptionMiddleware(
             _ => (
                 StatusCodes.Status500InternalServerError,
                 "Internal Server Error",
-                "An unexpected error occurred. Please try again later.",
-                (object?)null
+                exception.Message,
+                (object?)new { 
+                    stackTrace = exception.StackTrace, 
+                    innerException = exception.InnerException?.Message,
+                    env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                }
             )
         };
 
