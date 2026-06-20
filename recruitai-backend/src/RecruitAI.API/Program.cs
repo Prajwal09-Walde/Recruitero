@@ -474,6 +474,26 @@ finally
         MapKey("OPENAI_ENDPOINT", "OpenAI__Endpoint");
         MapKey("QDRANT_URL", "Qdrant__Url");
         MapKey("QDRANT_API_KEY", "Qdrant__ApiKey");
+
+        // JWT Mappings
+        MapKey("JWT_ISSUER", "Jwt__Issuer");
+        MapKey("JWT_AUDIENCE", "Jwt__Audience");
+        MapKey("JWT_EXPIRY_MINUTES", "Jwt__ExpiryMinutes");
+
+        // Storage Mappings
+        MapKey("STORAGE_LOCAL_PATH", "Storage__LocalPath");
+
+        // SMTP Mappings
+        MapKey("SMTP_HOST", "Smtp__Host");
+        MapKey("SMTP_PORT", "Smtp__Port");
+        MapKey("SMTP_USERNAME", "Smtp__Username");
+        MapKey("SMTP_PASSWORD", "Smtp__Password");
+        MapKey("SMTP_ENABLE_SSL", "Smtp__EnableSsl");
+        MapKey("SMTP_FROM_ADDRESS", "Smtp__FromAddress");
+        MapKey("SMTP_FROM_NAME", "Smtp__FromName");
+
+        // Seq Mappings
+        MapKey("SEQ_SERVER_URL", "Seq__ServerUrl");
     }
 
     static void MapKey(string rawKey, string aspNetKey)
