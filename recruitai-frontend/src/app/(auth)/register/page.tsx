@@ -42,15 +42,12 @@ export default function RegisterPage() {
         { email, password, fullName, role }
       );
 
-      const { token, refreshToken, email: resEmail, role: resRole, fullName: resFullName } = response.data;
-      login(resEmail, resRole, token, refreshToken, resFullName);
-
       toast(isAdminMode ? 'Organization registered!' : 'Account created!', {
-        description: 'Account created successfully.',
+        description: 'Account created successfully. Please sign in.',
         type: 'success',
       });
 
-      router.replace('/jobs');
+      router.replace('/login');
     } catch (err: any) {
       const detail = err.response?.data?.detail || err.response?.data?.title || err.message || 'An error occurred during registration.';
       toast('Registration failed', {
